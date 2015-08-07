@@ -81,7 +81,7 @@ namespace MouseTester
                         x += (double)e.lastx;
                         y += (double)e.lasty;
                     }
-                    this.mlog.Cpi = Math.Round(Math.Sqrt((x * x) + (y * y)) / 4.0);
+                    this.mlog.Cpi = Math.Round(Math.Sqrt((x * x) + (y * y)) / (10 / 2.54));
                     this.textBoxCPI.Text = this.mlog.Cpi.ToString();
                     this.textBox1.Text = "Press the Collect or Log Start button\r\n";
                     this.toolStripStatusLabel1.Text = "";
@@ -128,7 +128,7 @@ namespace MouseTester
         {
             if (this.test_state == state.idle) {
                 this.textBox1.Text = "1. Press and hold the left mouse button\r\n" +
-                                     "2. Move the mouse 10 cm (4 in) in a straight line\r\n" +
+                                     "2. Move the mouse 10 cm in a straight line\r\n" +
                                      "3. Release the left mouse button\r\n";
                 this.toolStripStatusLabel1.Text = "Press the left mouse button";
                 this.mlog.Clear();
@@ -222,6 +222,7 @@ namespace MouseTester
             saveFileDialog1.FilterIndex = 1;
             if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                this.mlog.Desc = textBoxDesc.Text;
                 this.mlog.Save(saveFileDialog1.FileName);
             }
         }
