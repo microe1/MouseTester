@@ -39,6 +39,7 @@
             this.buttonLoad = new System.Windows.Forms.Button();
             this.buttonPlot = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.buttonLog = new System.Windows.Forms.Button();
             this.buttonCollect = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -148,7 +149,7 @@
             // 
             // buttonPlot
             // 
-            this.buttonPlot.Location = new System.Drawing.Point(88, 19);
+            this.buttonPlot.Location = new System.Drawing.Point(168, 19);
             this.buttonPlot.Name = "buttonPlot";
             this.buttonPlot.Size = new System.Drawing.Size(75, 23);
             this.buttonPlot.TabIndex = 2;
@@ -160,6 +161,7 @@
             // 
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.buttonLog);
             this.groupBox4.Controls.Add(this.buttonCollect);
             this.groupBox4.Controls.Add(this.buttonPlot);
             this.groupBox4.Location = new System.Drawing.Point(13, 126);
@@ -168,6 +170,16 @@
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "MouseData";
+            // 
+            // buttonLog
+            // 
+            this.buttonLog.Location = new System.Drawing.Point(87, 19);
+            this.buttonLog.Name = "buttonLog";
+            this.buttonLog.Size = new System.Drawing.Size(75, 23);
+            this.buttonLog.TabIndex = 4;
+            this.buttonLog.Text = "Log Start";
+            this.buttonLog.UseVisualStyleBackColor = true;
+            this.buttonLog.Click += new System.EventHandler(this.buttonLog_Click);
             // 
             // buttonCollect
             // 
@@ -219,7 +231,7 @@
             this.MinimumSize = new System.Drawing.Size(300, 400);
             this.Name = "Form1";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Text = "MouseTester";
+            this.Text = "MouseTester v1.2";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -250,6 +262,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.Button buttonLog;
 
 
     }

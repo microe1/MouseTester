@@ -34,32 +34,38 @@ namespace MouseTester
             InitializeComponent();
             this.mlog = Mlog;
             this.last_start = 0;
-            this.last_end = mlog.Events.Count - 1;
+            this.last_end = this.mlog.Events.Count - 1;
             initialize_plot();
 
             this.comboBoxPlotType.SelectedIndex = 0;
             this.comboBoxPlotType.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
 
             this.numericUpDownStart.Minimum = 0;
-            this.numericUpDownStart.Maximum = mlog.Events.Count - 1;
+            this.numericUpDownStart.Maximum = this.mlog.Events.Count - 1;
             this.numericUpDownStart.Value = last_start;
             this.numericUpDownStart.ValueChanged += new System.EventHandler(this.numericUpDownStart_ValueChanged);
 
             this.numericUpDownEnd.Minimum = 0;
-            this.numericUpDownEnd.Maximum = mlog.Events.Count - 1;
+            this.numericUpDownEnd.Maximum = this.mlog.Events.Count - 1;
             this.numericUpDownEnd.Value = last_end;
             this.numericUpDownEnd.ValueChanged += new System.EventHandler(this.numericUpDownEnd_ValueChanged);
+
+            this.checkBoxStem.Checked = false;
+            this.checkBoxStem.CheckedChanged += new System.EventHandler(this.checkBoxStem_CheckedChanged);
+
+            this.checkBoxLines.Checked = false;
+            this.checkBoxLines.CheckedChanged += new System.EventHandler(this.checkBoxLines_CheckedChanged);
 
             refresh_plot();
         }
 
         private void initialize_plot()
         {
-            var pm = new PlotModel(mlog.Desc.ToString())
+            var pm = new PlotModel(this.mlog.Desc.ToString())
             {
                 PlotType = PlotType.Cartesian,
                 Background = OxyColors.White,
-                Subtitle = mlog.Cpi.ToString() + " cpi"
+                Subtitle = this.mlog.Cpi.ToString() + " cpi"
             };
             plot1.Model = pm;
         }
@@ -104,72 +110,148 @@ namespace MouseTester
                 LineStyle = LineStyle.Solid,
                 StrokeThickness = 1.0,
                 Smooth = true
+            };            
+
+            if (checkBoxLines.Checked)
+            {
+                lineSeries1.Smooth = false;
+                lineSeries2.Smooth = false;
+            }
+
+            var stemSeries1 = new StemSeries
+            {
+                Color = OxyColors.Blue,
+                StrokeThickness = 1.0,
+            };
+
+            var stemSeries2 = new StemSeries
+            {
+                Color = OxyColors.Red,
+                StrokeThickness = 1.0
             };
 
             if (comboBoxPlotType.Text.Contains("xyCount"))
             {
-                plot_xycounts_vs_time(scatterSeries1, scatterSeries2);
-                plot_fit(scatterSeries1, lineSeries1);
-                plot_fit(scatterSeries2, lineSeries2);
+                plot_xycounts_vs_time(scatterSeries1, scatterSeries2, stemSeries1, stemSeries2, lineSeries1, lineSeries2);
                 pm.Series.Add(scatterSeries1);
                 pm.Series.Add(scatterSeries2);
+                if (!checkBoxLines.Checked)
+                {
+                    plot_fit(scatterSeries1, lineSeries1);
+                    plot_fit(scatterSeries2, lineSeries2);
+                }
                 pm.Series.Add(lineSeries1);
                 pm.Series.Add(lineSeries2);
+                if (checkBoxStem.Checked)
+                {
+                    pm.Series.Add(stemSeries1);
+                    pm.Series.Add(stemSeries2);
+                }
             }
             else if (comboBoxPlotType.Text.Contains("xCount"))
             {
-                plot_xcounts_vs_time(scatterSeries1);
-                plot_fit(scatterSeries1, lineSeries1);
+                plot_xcounts_vs_time(scatterSeries1, stemSeries1, lineSeries1);
                 pm.Series.Add(scatterSeries1);
+                if (!checkBoxLines.Checked)
+                {
+                    plot_fit(scatterSeries1, lineSeries1);
+                }
                 pm.Series.Add(lineSeries1);
+                if (checkBoxStem.Checked)
+                {
+                    pm.Series.Add(stemSeries1);
+                }
             }
             else if (comboBoxPlotType.Text.Contains("yCount"))            
             {
-                plot_ycounts_vs_time(scatterSeries1);
-                plot_fit(scatterSeries1, lineSeries1);
+                plot_ycounts_vs_time(scatterSeries1, stemSeries1, lineSeries1);
                 pm.Series.Add(scatterSeries1);
+                if (!checkBoxLines.Checked)
+                {
+                    plot_fit(scatterSeries1, lineSeries1);
+                }
                 pm.Series.Add(lineSeries1);
+                if (checkBoxStem.Checked)
+                {
+                    pm.Series.Add(stemSeries1);
+                }
+
             }
             else if (comboBoxPlotType.Text.Contains("Interval"))
             {
-                plot_interval_vs_time(scatterSeries1);
-                plot_fit(scatterSeries1, lineSeries1);
+                plot_interval_vs_time(scatterSeries1, stemSeries1, lineSeries1);
                 pm.Series.Add(scatterSeries1);
+                if (!checkBoxLines.Checked)
+                {
+                    plot_fit(scatterSeries1, lineSeries1);
+                }
                 pm.Series.Add(lineSeries1);
+                if (checkBoxStem.Checked)
+                {
+                    pm.Series.Add(stemSeries1);
+                }
+
             }
             else if (comboBoxPlotType.Text.Contains("xyVelocity"))
             {
-                plot_xyvelocity_vs_time(scatterSeries1, scatterSeries2);
-                plot_fit(scatterSeries1, lineSeries1);
-                plot_fit(scatterSeries2, lineSeries2);
+                plot_xyvelocity_vs_time(scatterSeries1, scatterSeries2, stemSeries1, stemSeries2, lineSeries1, lineSeries2);
                 pm.Series.Add(scatterSeries1);
                 pm.Series.Add(scatterSeries2);
+                if (!checkBoxLines.Checked)
+                {
+                    plot_fit(scatterSeries1, lineSeries1);
+                    plot_fit(scatterSeries2, lineSeries2);
+                }
                 pm.Series.Add(lineSeries1);
                 pm.Series.Add(lineSeries2);
+                if (checkBoxStem.Checked)
+                {
+                    pm.Series.Add(stemSeries1);
+                    pm.Series.Add(stemSeries2);
+                }
+
             }
             else if (comboBoxPlotType.Text.Contains("xVelocity"))
             {
-                plot_xvelocity_vs_time(scatterSeries1);
-                plot_fit(scatterSeries1, lineSeries1);
+                plot_xvelocity_vs_time(scatterSeries1, stemSeries1, lineSeries1);
                 pm.Series.Add(scatterSeries1);
+                if (!checkBoxLines.Checked)
+                {
+                    plot_fit(scatterSeries1, lineSeries1);
+                }
                 pm.Series.Add(lineSeries1);
+                if (checkBoxStem.Checked)
+                {
+                    pm.Series.Add(stemSeries1);
+                }
             }
             else if (comboBoxPlotType.Text.Contains("yVelocity"))
             {
-                plot_yvelocity_vs_time(scatterSeries1);
-                plot_fit(scatterSeries1, lineSeries1);
+                plot_yvelocity_vs_time(scatterSeries1, stemSeries1, lineSeries1);
                 pm.Series.Add(scatterSeries1);
+                if (!checkBoxLines.Checked)
+                {
+                    plot_fit(scatterSeries1, lineSeries1);
+                }
                 pm.Series.Add(lineSeries1);
+                if (checkBoxStem.Checked)
+                {
+                    pm.Series.Add(stemSeries1);
+                }
             }
             else if (comboBoxPlotType.Text.Contains("X vs. Y"))
             {
-                plot_x_vs_y(scatterSeries1);
+                plot_x_vs_y(scatterSeries1, lineSeries1);
                 pm.Series.Add(scatterSeries1);
+                if (checkBoxLines.Checked)
+                {
+                    pm.Series.Add(lineSeries1);
+                }
             }
 
             var linearAxis1 = new LinearAxis();
-            linearAxis1.AbsoluteMinimum = x_min;
-            linearAxis1.AbsoluteMaximum = x_max;
+            linearAxis1.AbsoluteMinimum = x_min - (x_max - x_min) / 20.0;
+            linearAxis1.AbsoluteMaximum = x_max + (x_max - x_min) / 20.0;
             linearAxis1.MajorGridlineColor = OxyColor.FromArgb(40, 0, 0, 139);
             linearAxis1.MajorGridlineStyle = LineStyle.Solid;
             linearAxis1.MinorGridlineColor = OxyColor.FromArgb(20, 0, 0, 139);
@@ -179,8 +261,8 @@ namespace MouseTester
             pm.Axes.Add(linearAxis1);
 
             var linearAxis2 = new LinearAxis();
-            linearAxis2.AbsoluteMinimum = y_min;
-            linearAxis2.AbsoluteMaximum = y_max;
+            linearAxis2.AbsoluteMinimum = y_min - (y_max - y_min) / 20.0;
+            linearAxis2.AbsoluteMaximum = y_max + (y_max - y_min) / 20.0;
             linearAxis2.MajorGridlineColor = OxyColor.FromArgb(40, 0, 0, 139);
             linearAxis2.MajorGridlineStyle = LineStyle.Solid;
             linearAxis2.MinorGridlineColor = OxyColor.FromArgb(20, 0, 0, 139);
@@ -219,64 +301,72 @@ namespace MouseTester
             }
         }
 
-        private void plot_xcounts_vs_time(ScatterSeries scatterSeries1)
+        private void plot_xcounts_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
         {
             xlabel = "Time (ms)";
             ylabel = "xCounts";
             reset_minmax();
             for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
-                double y = mlog.Events[i].lastx;
+                double x = this.mlog.Events[i].ts;
+                double y = this.mlog.Events[i].lastx;
                 update_minmax(x, y);
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
+                lineSeries1.Points.Add(new DataPoint(x, y));
+                stemSeries1.Points.Add(new DataPoint(x, y));
             }
         }
 
-        private void plot_ycounts_vs_time(ScatterSeries scatterSeries1)
+        private void plot_ycounts_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
         {
             xlabel = "Time (ms)";
             ylabel = "yCounts";
             reset_minmax();
             for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
-                double y = mlog.Events[i].lasty;
+                double x = this.mlog.Events[i].ts;
+                double y = this.mlog.Events[i].lasty;
                 update_minmax(x, y);
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
+                lineSeries1.Points.Add(new DataPoint(x, y));
+                stemSeries1.Points.Add(new DataPoint(x, y));
             }
         }
 
-        private void plot_xycounts_vs_time(ScatterSeries scatterSeries1, ScatterSeries scatterSeries2)
+        private void plot_xycounts_vs_time(ScatterSeries scatterSeries1, ScatterSeries scatterSeries2, StemSeries stemSeries1, StemSeries stemSeries2, LineSeries lineSeries1, LineSeries lineSeries2)
         {
             xlabel = "Time (ms)";
             ylabel = "Counts [x = Blue, y = Red]";
             reset_minmax();
             for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
-                double y = mlog.Events[i].lastx;
+                double x = this.mlog.Events[i].ts;
+                double y = this.mlog.Events[i].lastx;
                 update_minmax(x, y);
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
+                lineSeries1.Points.Add(new DataPoint(x, y));
+                stemSeries1.Points.Add(new DataPoint(x, y));
             }
 
             for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
-                double y = mlog.Events[i].lasty;
+                double x = this.mlog.Events[i].ts;
+                double y = this.mlog.Events[i].lasty;
                 update_minmax(x, y);
                 scatterSeries2.Points.Add(new ScatterPoint(x, y));
+                lineSeries2.Points.Add(new DataPoint(x, y));
+                stemSeries2.Points.Add(new DataPoint(x, y));
             }
         }
 
-        private void plot_interval_vs_time(ScatterSeries scatterSeries1)
+        private void plot_interval_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
         {
             xlabel = "Time (ms)";
             ylabel = "Update Time (ms)";
             reset_minmax();
             for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
+                double x = this.mlog.Events[i].ts;
                 double y;
                 if (i == 0)
                 {
@@ -284,23 +374,25 @@ namespace MouseTester
                 }
                 else
                 {
-                    y = mlog.Events[i].ts - mlog.Events[i - 1].ts;
+                    y = this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts;
                 }
                 update_minmax(x, y);
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
+                lineSeries1.Points.Add(new DataPoint(x, y));
+                stemSeries1.Points.Add(new DataPoint(x, y));
             }
         }
 
-        private void plot_xvelocity_vs_time(ScatterSeries scatterSeries1)
+        private void plot_xvelocity_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
         {
             xlabel = "Time (ms)";
             ylabel = "xVelocity (m/s)";
             reset_minmax();
-            if (mlog.Cpi > 0)
+            if (this.mlog.Cpi > 0)
             {
                 for (int i = last_start; i <= last_end; i++)
                 {
-                    double x = mlog.Events[i].ts;
+                    double x = this.mlog.Events[i].ts;
                     double y;
                     if (i == 0)
                     {
@@ -308,10 +400,12 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (mlog.Events[i].lastx) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
+                        y = (this.mlog.Events[i].lastx) / (this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts) / this.mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
                     scatterSeries1.Points.Add(new ScatterPoint(x, y));
+                    lineSeries1.Points.Add(new DataPoint(x, y));
+                    stemSeries1.Points.Add(new DataPoint(x, y));
                 }
             }
             else
@@ -320,16 +414,16 @@ namespace MouseTester
             }
         }
 
-        private void plot_yvelocity_vs_time(ScatterSeries scatterSeries1)
+        private void plot_yvelocity_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
         {
             xlabel = "Time (ms)";
             ylabel = "yVelocity (m/s)";
             reset_minmax();
-            if (mlog.Cpi > 0)
+            if (this.mlog.Cpi > 0)
             {
                 for (int i = last_start; i <= last_end; i++)
                 {
-                    double x = mlog.Events[i].ts;
+                    double x = this.mlog.Events[i].ts;
                     double y;
                     if (i == 0)
                     {
@@ -337,10 +431,12 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (mlog.Events[i].lasty) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
+                        y = (this.mlog.Events[i].lasty) / (this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts) / this.mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
                     scatterSeries1.Points.Add(new ScatterPoint(x, y));
+                    lineSeries1.Points.Add(new DataPoint(x, y));
+                    stemSeries1.Points.Add(new DataPoint(x, y));
                 }
             }
             else
@@ -349,16 +445,16 @@ namespace MouseTester
             }
         }
 
-        private void plot_xyvelocity_vs_time(ScatterSeries scatterSeries1, ScatterSeries scatterSeries2)
+        private void plot_xyvelocity_vs_time(ScatterSeries scatterSeries1, ScatterSeries scatterSeries2, StemSeries stemSeries1, StemSeries stemSeries2, LineSeries lineSeries1, LineSeries lineSeries2)
         {
             xlabel = "Time (ms)";
             ylabel = "Velocity (m/s) [x = Blue, y = Red]";
             reset_minmax();
-            if (mlog.Cpi > 0)
+            if (this.mlog.Cpi > 0)
             {
                 for (int i = last_start; i <= last_end; i++)
                 {
-                    double x = mlog.Events[i].ts;
+                    double x = this.mlog.Events[i].ts;
                     double y;
                     if (i == 0)
                     {
@@ -366,15 +462,17 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (mlog.Events[i].lastx) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
+                        y = (this.mlog.Events[i].lastx) / (this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts) / this.mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
                     scatterSeries1.Points.Add(new ScatterPoint(x, y));
+                    lineSeries1.Points.Add(new DataPoint(x, y));
+                    stemSeries1.Points.Add(new DataPoint(x, y));
                 }
 
                 for (int i = last_start; i <= last_end; i++)
                 {
-                    double x = mlog.Events[i].ts;
+                    double x = this.mlog.Events[i].ts;
                     double y;
                     if (i == 0)
                     {
@@ -382,10 +480,12 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (mlog.Events[i].lasty) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
+                        y = (this.mlog.Events[i].lasty) / (this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts) / this.mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
                     scatterSeries2.Points.Add(new ScatterPoint(x, y));
+                    lineSeries2.Points.Add(new DataPoint(x, y));
+                    stemSeries2.Points.Add(new DataPoint(x, y));
                 }
             }
             else
@@ -394,7 +494,7 @@ namespace MouseTester
             }
         }
 
-        private void plot_x_vs_y(ScatterSeries scatterSeries1)
+        private void plot_x_vs_y(ScatterSeries scatterSeries1, LineSeries lineSeries1)
         {
             xlabel = "xCounts";
             ylabel = "yCounts";
@@ -403,17 +503,22 @@ namespace MouseTester
             double y = 0.0;
             for (int i = last_start; i <= last_end; i++)
             {
-                x += mlog.Events[i].lastx;
-                y += mlog.Events[i].lasty;
+                x += this.mlog.Events[i].lastx;
+                y += this.mlog.Events[i].lasty;
                 update_minmax(x, x);
                 update_minmax(y, y);
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
+                lineSeries1.Points.Add(new DataPoint(x, y));
             }
         }
 
+#if true
+// Window based smoothing
         private void plot_fit(ScatterSeries scatterSeries1, LineSeries lineSeries1)
         {
             double sum = 0.0;
+
+            lineSeries1.Points.Clear();
 
             for (int i = 0; ((i < 8) && (i < scatterSeries1.Points.Count)); i++)
             {
@@ -429,6 +534,26 @@ namespace MouseTester
                 sum = sum + scatterSeries1.Points[i + 5].Y;
             }
         }
+#else
+// Time based smoothing
+        private void plot_fit(ScatterSeries scatterSeries1, LineSeries lineSeries1)
+        {
+            double hz = 125;
+            double ms = 1000.0 / hz;
+            lineSeries1.Points.Clear();
+
+            int ind = 0;
+            for (double x = scatterSeries1.Points[0].X; x <= scatterSeries1.Points[scatterSeries1.Points.Count - 1].X; x += ms)
+            {
+                double sum = 0.0;
+                while (scatterSeries1.Points[ind].X <= x)
+                {
+                    sum += scatterSeries1.Points[ind++].Y;
+                }
+                lineSeries1.Points.Add(new DataPoint(x - (ms / 2.0), sum / ms));
+            }
+        }
+#endif
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -459,6 +584,16 @@ namespace MouseTester
                 last_end = (int)numericUpDownEnd.Value;
                 refresh_plot();
             }
+        }
+
+        private void checkBoxStem_CheckedChanged(object sender, EventArgs e)
+        {
+            refresh_plot();
+        }
+
+        private void checkBoxLines_CheckedChanged(object sender, EventArgs e)
+        {
+            refresh_plot();
         }
 
         private void buttonSavePNG_Click(object sender, EventArgs e)

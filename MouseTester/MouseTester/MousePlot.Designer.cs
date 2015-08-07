@@ -30,6 +30,7 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.plot1 = new OxyPlot.WindowsForms.Plot();
+            this.checkBoxStem = new System.Windows.Forms.CheckBox();
             this.buttonSavePNG = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.numericUpDownEnd = new System.Windows.Forms.NumericUpDown();
@@ -37,6 +38,7 @@
             this.numericUpDownStart = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.comboBoxPlotType = new System.Windows.Forms.ComboBox();
+            this.checkBoxLines = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -61,6 +63,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.checkBoxLines);
+            this.splitContainer1.Panel2.Controls.Add(this.checkBoxStem);
             this.splitContainer1.Panel2.Controls.Add(this.buttonSavePNG);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox3);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox2);
@@ -85,6 +89,16 @@
             this.plot1.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
             this.plot1.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
             // 
+            // checkBoxStem
+            // 
+            this.checkBoxStem.AutoSize = true;
+            this.checkBoxStem.Location = new System.Drawing.Point(510, 40);
+            this.checkBoxStem.Name = "checkBoxStem";
+            this.checkBoxStem.Size = new System.Drawing.Size(50, 17);
+            this.checkBoxStem.TabIndex = 8;
+            this.checkBoxStem.Text = "Stem";
+            this.checkBoxStem.UseVisualStyleBackColor = true;
+            // 
             // buttonSavePNG
             // 
             this.buttonSavePNG.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -99,9 +113,9 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.numericUpDownEnd);
-            this.groupBox3.Location = new System.Drawing.Point(434, 7);
+            this.groupBox3.Location = new System.Drawing.Point(369, 7);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 50);
+            this.groupBox3.Size = new System.Drawing.Size(135, 50);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Data Point End";
@@ -118,7 +132,7 @@
             this.groupBox2.Controls.Add(this.numericUpDownStart);
             this.groupBox2.Location = new System.Drawing.Point(228, 7);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 50);
+            this.groupBox2.Size = new System.Drawing.Size(135, 50);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Point Start";
@@ -158,6 +172,16 @@
             this.comboBoxPlotType.Size = new System.Drawing.Size(200, 21);
             this.comboBoxPlotType.TabIndex = 1;
             // 
+            // checkBoxLines
+            // 
+            this.checkBoxLines.AutoSize = true;
+            this.checkBoxLines.Location = new System.Drawing.Point(510, 17);
+            this.checkBoxLines.Name = "checkBoxLines";
+            this.checkBoxLines.Size = new System.Drawing.Size(51, 17);
+            this.checkBoxLines.TabIndex = 9;
+            this.checkBoxLines.Text = "Lines";
+            this.checkBoxLines.UseVisualStyleBackColor = true;
+            // 
             // MousePlot
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -169,6 +193,7 @@
             this.Text = "MousePlot";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -191,5 +216,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button buttonSavePNG;
+        private System.Windows.Forms.CheckBox checkBoxStem;
+        private System.Windows.Forms.CheckBox checkBoxLines;
     }
 }

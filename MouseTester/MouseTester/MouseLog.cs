@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,7 @@ namespace MouseTester
             }
             set
             {
-                this.desc = Desc;
+                this.desc = value;
             }
         }
 
@@ -91,7 +92,7 @@ namespace MouseTester
                     sw.WriteLine("xCount,yCount,Time (ms)");
                     foreach (MouseEvent e in this.events)
                     {
-                        sw.WriteLine(e.lastx.ToString() + "," + e.lasty.ToString() + "," + e.ts.ToString());
+                        sw.WriteLine(e.lastx.ToString() + "," + e.lasty.ToString() + "," + e.ts.ToString(CultureInfo.InvariantCulture));
                     }
                 }
             }
@@ -99,6 +100,21 @@ namespace MouseTester
             {
                 Debug.WriteLine(ex.ToString());
             }
+        }
+        
+        public int deltaX()
+        {
+            return this.events.Sum(e => e.lastx);
+        }
+
+        public int deltaY()
+        {
+            return this.events.Sum(e => e.lasty);
+        }
+
+        public double path()
+        {
+            return this.events.Sum(e => Math.Sqrt((e.lastx * e.lastx) + (e.lasty * e.lasty)));
         }
     }
 }
