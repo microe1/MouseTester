@@ -19,6 +19,25 @@ namespace MouseTester
     
     public partial class MousePlot : Form
     {
+        delegate void GraphFunction();
+
+        class GraphType
+        {
+            string Name;
+            public GraphFunction PlotFunc;
+
+            public GraphType(string Name, GraphFunction PlotFunc)
+            {
+                this.Name = Name;
+                this.PlotFunc = PlotFunc;
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
+
         private MouseLog mlog;
         private int last_start;
         private int last_end;
@@ -29,6 +48,10 @@ namespace MouseTester
         private string xlabel = "";
         private string ylabel = "";
 
+        ScatterSeries scatterSeries1, scatterSeries2;
+        LineSeries lineSeries1, lineSeries2;
+        StemSeries stemSeries1, stemSeries2;
+
         public MousePlot(MouseLog Mlog)
         {
             InitializeComponent();
@@ -36,6 +59,21 @@ namespace MouseTester
             this.last_start = 0;
             this.last_end = this.mlog.Events.Count - 1;
             initialize_plot();
+
+            GraphType[] grapthtypes = 
+            {
+                new GraphType("xCount vs. Time", plot_xcounts_vs_time),
+                new GraphType("yCount vs. Time", plot_ycounts_vs_time),
+                new GraphType("xyCount vs. Time", plot_xycounts_vs_time),
+                new GraphType("Interval vs. Time", plot_interval_vs_time),
+                new GraphType("xVelocity vs. Time", plot_xvelocity_vs_time),
+                new GraphType("yVelocity vs. Time", plot_yvelocity_vs_time),
+                new GraphType("xyVelocity vs. Time", plot_xyvelocity_vs_time),
+                new GraphType("X vs. Y", plot_x_vs_y),
+            };
+
+            foreach (GraphType type in grapthtypes)
+                comboBoxPlotType.Items.Add(type);
 
             this.comboBoxPlotType.SelectedIndex = 0;
             this.comboBoxPlotType.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
@@ -76,41 +114,7 @@ namespace MouseTester
             pm.Series.Clear();
             pm.Axes.Clear();
 
-            var scatterSeries1 = new ScatterSeries
-            {
-                BinSize = 8,
-                MarkerFill = OxyColors.Blue,
-                MarkerSize = 2.0,
-                MarkerStroke = OxyColors.Blue,
-                MarkerStrokeThickness = 1.0,
-                MarkerType = MarkerType.Circle
-            };
-
-            var scatterSeries2 = new ScatterSeries
-            {
-                BinSize = 8,
-                MarkerFill = OxyColors.Red,
-                MarkerSize = 2.0,
-                MarkerStroke = OxyColors.Red,
-                MarkerStrokeThickness = 1.0,
-                MarkerType = MarkerType.Circle
-            };
-
-            var lineSeries1 = new LineSeries
-            {
-                Color = OxyColors.Blue,
-                LineStyle = LineStyle.Solid,
-                StrokeThickness = 1.0,
-                Smooth = true
-            };
-
-            var lineSeries2 = new LineSeries
-            {
-                Color = OxyColors.Red,
-                LineStyle = LineStyle.Solid,
-                StrokeThickness = 1.0,
-                Smooth = true
-            };            
+            ResetPlotComponents();
 
             if (checkBoxLines.Checked)
             {
@@ -118,136 +122,14 @@ namespace MouseTester
                 lineSeries2.Smooth = false;
             }
 
-            var stemSeries1 = new StemSeries
+            GraphType type = comboBoxPlotType.SelectedItem as GraphType;
+            if (type == null)
             {
-                Color = OxyColors.Blue,
-                StrokeThickness = 1.0,
-            };
-
-            var stemSeries2 = new StemSeries
-            {
-                Color = OxyColors.Red,
-                StrokeThickness = 1.0
-            };
-
-            if (comboBoxPlotType.Text.Contains("xyCount"))
-            {
-                plot_xycounts_vs_time(scatterSeries1, scatterSeries2, stemSeries1, stemSeries2, lineSeries1, lineSeries2);
-                pm.Series.Add(scatterSeries1);
-                pm.Series.Add(scatterSeries2);
-                if (!checkBoxLines.Checked)
-                {
-                    plot_fit(scatterSeries1, lineSeries1);
-                    plot_fit(scatterSeries2, lineSeries2);
-                }
-                pm.Series.Add(lineSeries1);
-                pm.Series.Add(lineSeries2);
-                if (checkBoxStem.Checked)
-                {
-                    pm.Series.Add(stemSeries1);
-                    pm.Series.Add(stemSeries2);
-                }
+                MessageBox.Show("Something bad happened! SelectedItem is null...");
+                return;
             }
-            else if (comboBoxPlotType.Text.Contains("xCount"))
-            {
-                plot_xcounts_vs_time(scatterSeries1, stemSeries1, lineSeries1);
-                pm.Series.Add(scatterSeries1);
-                if (!checkBoxLines.Checked)
-                {
-                    plot_fit(scatterSeries1, lineSeries1);
-                }
-                pm.Series.Add(lineSeries1);
-                if (checkBoxStem.Checked)
-                {
-                    pm.Series.Add(stemSeries1);
-                }
-            }
-            else if (comboBoxPlotType.Text.Contains("yCount"))            
-            {
-                plot_ycounts_vs_time(scatterSeries1, stemSeries1, lineSeries1);
-                pm.Series.Add(scatterSeries1);
-                if (!checkBoxLines.Checked)
-                {
-                    plot_fit(scatterSeries1, lineSeries1);
-                }
-                pm.Series.Add(lineSeries1);
-                if (checkBoxStem.Checked)
-                {
-                    pm.Series.Add(stemSeries1);
-                }
-
-            }
-            else if (comboBoxPlotType.Text.Contains("Interval"))
-            {
-                plot_interval_vs_time(scatterSeries1, stemSeries1, lineSeries1);
-                pm.Series.Add(scatterSeries1);
-                if (!checkBoxLines.Checked)
-                {
-                    plot_fit(scatterSeries1, lineSeries1);
-                }
-                pm.Series.Add(lineSeries1);
-                if (checkBoxStem.Checked)
-                {
-                    pm.Series.Add(stemSeries1);
-                }
-
-            }
-            else if (comboBoxPlotType.Text.Contains("xyVelocity"))
-            {
-                plot_xyvelocity_vs_time(scatterSeries1, scatterSeries2, stemSeries1, stemSeries2, lineSeries1, lineSeries2);
-                pm.Series.Add(scatterSeries1);
-                pm.Series.Add(scatterSeries2);
-                if (!checkBoxLines.Checked)
-                {
-                    plot_fit(scatterSeries1, lineSeries1);
-                    plot_fit(scatterSeries2, lineSeries2);
-                }
-                pm.Series.Add(lineSeries1);
-                pm.Series.Add(lineSeries2);
-                if (checkBoxStem.Checked)
-                {
-                    pm.Series.Add(stemSeries1);
-                    pm.Series.Add(stemSeries2);
-                }
-
-            }
-            else if (comboBoxPlotType.Text.Contains("xVelocity"))
-            {
-                plot_xvelocity_vs_time(scatterSeries1, stemSeries1, lineSeries1);
-                pm.Series.Add(scatterSeries1);
-                if (!checkBoxLines.Checked)
-                {
-                    plot_fit(scatterSeries1, lineSeries1);
-                }
-                pm.Series.Add(lineSeries1);
-                if (checkBoxStem.Checked)
-                {
-                    pm.Series.Add(stemSeries1);
-                }
-            }
-            else if (comboBoxPlotType.Text.Contains("yVelocity"))
-            {
-                plot_yvelocity_vs_time(scatterSeries1, stemSeries1, lineSeries1);
-                pm.Series.Add(scatterSeries1);
-                if (!checkBoxLines.Checked)
-                {
-                    plot_fit(scatterSeries1, lineSeries1);
-                }
-                pm.Series.Add(lineSeries1);
-                if (checkBoxStem.Checked)
-                {
-                    pm.Series.Add(stemSeries1);
-                }
-            }
-            else if (comboBoxPlotType.Text.Contains("X vs. Y"))
-            {
-                plot_x_vs_y(scatterSeries1, lineSeries1);
-                pm.Series.Add(scatterSeries1);
-                if (checkBoxLines.Checked)
-                {
-                    pm.Series.Add(lineSeries1);
-                }
-            }
+            else
+                type.PlotFunc();
 
             var linearAxis1 = new LinearAxis();
             linearAxis1.AbsoluteMinimum = x_min - (x_max - x_min) / 20.0;
@@ -271,6 +153,57 @@ namespace MouseTester
             pm.Axes.Add(linearAxis2);
 
             plot1.RefreshPlot(true);
+        }
+
+        private void ResetPlotComponents()
+        {
+            scatterSeries1 = new ScatterSeries
+            {
+                BinSize = 8,
+                MarkerFill = OxyColors.Blue,
+                MarkerSize = 2.0,
+                MarkerStroke = OxyColors.Blue,
+                MarkerStrokeThickness = 1.0,
+                MarkerType = MarkerType.Circle
+            };
+
+            scatterSeries2 = new ScatterSeries
+            {
+                BinSize = 8,
+                MarkerFill = OxyColors.Red,
+                MarkerSize = 2.0,
+                MarkerStroke = OxyColors.Red,
+                MarkerStrokeThickness = 1.0,
+                MarkerType = MarkerType.Circle
+            };
+
+            lineSeries1 = new LineSeries
+            {
+                Color = OxyColors.Blue,
+                LineStyle = LineStyle.Solid,
+                StrokeThickness = 1.0,
+                Smooth = true
+            };
+
+            lineSeries2 = new LineSeries
+            {
+                Color = OxyColors.Red,
+                LineStyle = LineStyle.Solid,
+                StrokeThickness = 1.0,
+                Smooth = true
+            };
+
+            stemSeries1 = new StemSeries
+            {
+                Color = OxyColors.Blue,
+                StrokeThickness = 1.0,
+            };
+
+            stemSeries2 = new StemSeries
+            {
+                Color = OxyColors.Red,
+                StrokeThickness = 1.0
+            };
         }
 
         private void reset_minmax()
@@ -301,7 +234,7 @@ namespace MouseTester
             }
         }
 
-        private void plot_xcounts_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
+        private void plot_xcounts_vs_time()
         {
             xlabel = "Time (ms)";
             ylabel = "xCounts";
@@ -315,9 +248,23 @@ namespace MouseTester
                 lineSeries1.Points.Add(new DataPoint(x, y));
                 stemSeries1.Points.Add(new DataPoint(x, y));
             }
+
+            PlotModel pm = plot1.Model;
+
+            pm.Series.Add(scatterSeries1);
+            if (!checkBoxLines.Checked)
+            {
+                plot_fit(scatterSeries1, lineSeries1);
+            }
+            pm.Series.Add(lineSeries1);
+            if (checkBoxStem.Checked)
+            {
+                pm.Series.Add(stemSeries1);
+            }
+
         }
 
-        private void plot_ycounts_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
+        private void plot_ycounts_vs_time()
         {
             xlabel = "Time (ms)";
             ylabel = "yCounts";
@@ -331,9 +278,22 @@ namespace MouseTester
                 lineSeries1.Points.Add(new DataPoint(x, y));
                 stemSeries1.Points.Add(new DataPoint(x, y));
             }
+
+            PlotModel pm = plot1.Model;
+
+            pm.Series.Add(scatterSeries1);
+            if (!checkBoxLines.Checked)
+            {
+                plot_fit(scatterSeries1, lineSeries1);
+            }
+            pm.Series.Add(lineSeries1);
+            if (checkBoxStem.Checked)
+            {
+                pm.Series.Add(stemSeries1);
+            }
         }
 
-        private void plot_xycounts_vs_time(ScatterSeries scatterSeries1, ScatterSeries scatterSeries2, StemSeries stemSeries1, StemSeries stemSeries2, LineSeries lineSeries1, LineSeries lineSeries2)
+        private void plot_xycounts_vs_time()
         {
             xlabel = "Time (ms)";
             ylabel = "Counts [x = Blue, y = Red]";
@@ -357,9 +317,27 @@ namespace MouseTester
                 lineSeries2.Points.Add(new DataPoint(x, y));
                 stemSeries2.Points.Add(new DataPoint(x, y));
             }
+
+            PlotModel pm = plot1.Model;
+
+            pm.Series.Add(scatterSeries1);
+            pm.Series.Add(scatterSeries2);
+            if (!checkBoxLines.Checked)
+            {
+                plot_fit(scatterSeries1, lineSeries1);
+                plot_fit(scatterSeries2, lineSeries2);
+            }
+            pm.Series.Add(lineSeries1);
+            pm.Series.Add(lineSeries2);
+            if (checkBoxStem.Checked)
+            {
+                pm.Series.Add(stemSeries1);
+                pm.Series.Add(stemSeries2);
+            }
+
         }
 
-        private void plot_interval_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
+        private void plot_interval_vs_time()
         {
             xlabel = "Time (ms)";
             ylabel = "Update Time (ms)";
@@ -381,9 +359,22 @@ namespace MouseTester
                 lineSeries1.Points.Add(new DataPoint(x, y));
                 stemSeries1.Points.Add(new DataPoint(x, y));
             }
+
+            PlotModel pm = plot1.Model;
+
+            pm.Series.Add(scatterSeries1);
+            if (!checkBoxLines.Checked)
+            {
+                plot_fit(scatterSeries1, lineSeries1);
+            }
+            pm.Series.Add(lineSeries1);
+            if (checkBoxStem.Checked)
+            {
+                pm.Series.Add(stemSeries1);
+            }
         }
 
-        private void plot_xvelocity_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
+        private void plot_xvelocity_vs_time()
         {
             xlabel = "Time (ms)";
             ylabel = "xVelocity (m/s)";
@@ -412,9 +403,22 @@ namespace MouseTester
             {
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
+
+            PlotModel pm = plot1.Model;
+
+            pm.Series.Add(scatterSeries1);
+            if (!checkBoxLines.Checked)
+            {
+                plot_fit(scatterSeries1, lineSeries1);
+            }
+            pm.Series.Add(lineSeries1);
+            if (checkBoxStem.Checked)
+            {
+                pm.Series.Add(stemSeries1);
+            }
         }
 
-        private void plot_yvelocity_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
+        private void plot_yvelocity_vs_time()
         {
             xlabel = "Time (ms)";
             ylabel = "yVelocity (m/s)";
@@ -443,9 +447,22 @@ namespace MouseTester
             {
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
+
+            PlotModel pm = plot1.Model;
+
+            pm.Series.Add(scatterSeries1);
+            if (!checkBoxLines.Checked)
+            {
+                plot_fit(scatterSeries1, lineSeries1);
+            }
+            pm.Series.Add(lineSeries1);
+            if (checkBoxStem.Checked)
+            {
+                pm.Series.Add(stemSeries1);
+            }
         }
 
-        private void plot_xyvelocity_vs_time(ScatterSeries scatterSeries1, ScatterSeries scatterSeries2, StemSeries stemSeries1, StemSeries stemSeries2, LineSeries lineSeries1, LineSeries lineSeries2)
+        private void plot_xyvelocity_vs_time()
         {
             xlabel = "Time (ms)";
             ylabel = "Velocity (m/s) [x = Blue, y = Red]";
@@ -492,9 +509,27 @@ namespace MouseTester
             {
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
+
+            PlotModel pm = plot1.Model;
+
+            pm.Series.Add(scatterSeries1);
+            pm.Series.Add(scatterSeries2);
+            if (!checkBoxLines.Checked)
+            {
+                plot_fit(scatterSeries1, lineSeries1);
+                plot_fit(scatterSeries2, lineSeries2);
+            }
+            pm.Series.Add(lineSeries1);
+            pm.Series.Add(lineSeries2);
+            if (checkBoxStem.Checked)
+            {
+                pm.Series.Add(stemSeries1);
+                pm.Series.Add(stemSeries2);
+            }
+
         }
 
-        private void plot_x_vs_y(ScatterSeries scatterSeries1, LineSeries lineSeries1)
+        private void plot_x_vs_y()
         {
             xlabel = "xCounts";
             ylabel = "yCounts";
@@ -509,6 +544,14 @@ namespace MouseTester
                 update_minmax(y, y);
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
                 lineSeries1.Points.Add(new DataPoint(x, y));
+            }
+
+            PlotModel pm = plot1.Model;
+
+            pm.Series.Add(scatterSeries1);
+            if (checkBoxLines.Checked)
+            {
+                pm.Series.Add(lineSeries1);
             }
         }
 

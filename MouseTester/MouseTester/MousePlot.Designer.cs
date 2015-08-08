@@ -30,6 +30,7 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.plot1 = new OxyPlot.WindowsForms.Plot();
+            this.checkBoxLines = new System.Windows.Forms.CheckBox();
             this.checkBoxStem = new System.Windows.Forms.CheckBox();
             this.buttonSavePNG = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -38,7 +39,6 @@
             this.numericUpDownStart = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.comboBoxPlotType = new System.Windows.Forms.ComboBox();
-            this.checkBoxLines = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -88,6 +88,16 @@
             this.plot1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
             this.plot1.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
             this.plot1.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
+            // 
+            // checkBoxLines
+            // 
+            this.checkBoxLines.AutoSize = true;
+            this.checkBoxLines.Location = new System.Drawing.Point(510, 17);
+            this.checkBoxLines.Name = "checkBoxLines";
+            this.checkBoxLines.Size = new System.Drawing.Size(51, 17);
+            this.checkBoxLines.TabIndex = 9;
+            this.checkBoxLines.Text = "Lines";
+            this.checkBoxLines.UseVisualStyleBackColor = true;
             // 
             // checkBoxStem
             // 
@@ -158,29 +168,10 @@
             // 
             this.comboBoxPlotType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxPlotType.FormattingEnabled = true;
-            this.comboBoxPlotType.Items.AddRange(new object[] {
-            "xCount vs. Time",
-            "yCount vs. Time",
-            "xyCount vs. Time",
-            "Interval vs. Time",
-            "xVelocity vs. Time",
-            "yVelocity vs. Time",
-            "xyVelocity vs. Time",
-            "X vs. Y"});
             this.comboBoxPlotType.Location = new System.Drawing.Point(6, 19);
             this.comboBoxPlotType.Name = "comboBoxPlotType";
             this.comboBoxPlotType.Size = new System.Drawing.Size(200, 21);
             this.comboBoxPlotType.TabIndex = 1;
-            // 
-            // checkBoxLines
-            // 
-            this.checkBoxLines.AutoSize = true;
-            this.checkBoxLines.Location = new System.Drawing.Point(510, 17);
-            this.checkBoxLines.Name = "checkBoxLines";
-            this.checkBoxLines.Size = new System.Drawing.Size(51, 17);
-            this.checkBoxLines.TabIndex = 9;
-            this.checkBoxLines.Text = "Lines";
-            this.checkBoxLines.UseVisualStyleBackColor = true;
             // 
             // MousePlot
             // 

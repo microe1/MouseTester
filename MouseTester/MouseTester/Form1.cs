@@ -184,6 +184,12 @@ namespace MouseTester
 
         private void buttonPlot_Click(object sender, EventArgs e)
         {
+            if (this.mlog.Cpi == 0.0)
+            {
+                MessageBox.Show("CPI value is invalid, please run Measure");
+                return;
+            }
+
             if (this.mlog.Events.Count > 0)
             {
                 this.mlog.Desc = textBoxDesc.Text;
@@ -208,6 +214,13 @@ namespace MouseTester
                                  "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
             this.textBoxDesc.Text = this.mlog.Desc.ToString();
             this.textBoxCPI.Text = this.mlog.Cpi.ToString();
+
+            if (this.mlog.Cpi == 0.0)
+            {
+                MessageBox.Show("CPI value is invalid, please run Measure");
+                return;
+            }
+
             if (this.mlog.Events.Count > 0)
             {
                 MousePlot mousePlot = new MousePlot(this.mlog);
@@ -229,16 +242,18 @@ namespace MouseTester
 
         private void textBoxCPI_Validated(object sender, EventArgs e)
         {
-            try
-            {
-                this.mlog.Cpi = double.Parse(this.textBoxCPI.Text);
-            }
-            catch //(Exception ex)
-            {
-                MessageBox.Show("Invalid CPI, resetting to previous value");
-                this.textBoxCPI.Text = this.mlog.Cpi.ToString();
-            }
+            this.mlog.Cpi = Convert.ToDouble(textBoxCPI.Text);
             this.textBox1.Text = "Press the Collect or Log Start button\r\n";
+        }
+
+        private void Numtextbox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+                e.Handled = true;
+
+            // only allow one decimal point
+            //if (e.KeyChar == '.' && (sender as TextBox).Text.IndexOf('.') > -1)
+            //e.Handled = true;
         }
     }
 }
