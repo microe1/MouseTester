@@ -23,12 +23,28 @@ namespace MouseTester
 
         class GraphType
         {
+            public enum GT : byte
+            {
+                normal,
+                dual,
+                nolines
+            }
+
             string Name;
             public GraphFunction PlotFunc;
+            private GT _DualGraph;
+            public GT DualGraph 
+            {
+                get
+                {
+                    return _DualGraph;
+                }
+            }
 
-            public GraphType(string Name, GraphFunction PlotFunc)
+            public GraphType(string Name, GT DualGraph, GraphFunction PlotFunc)
             {
                 this.Name = Name;
+                this._DualGraph = DualGraph;
                 this.PlotFunc = PlotFunc;
             }
 
@@ -62,14 +78,14 @@ namespace MouseTester
 
             GraphType[] grapthtypes = 
             {
-                new GraphType("xCount vs. Time", plot_xcounts_vs_time),
-                new GraphType("yCount vs. Time", plot_ycounts_vs_time),
-                new GraphType("xyCount vs. Time", plot_xycounts_vs_time),
-                new GraphType("Interval vs. Time", plot_interval_vs_time),
-                new GraphType("xVelocity vs. Time", plot_xvelocity_vs_time),
-                new GraphType("yVelocity vs. Time", plot_yvelocity_vs_time),
-                new GraphType("xyVelocity vs. Time", plot_xyvelocity_vs_time),
-                new GraphType("X vs. Y", plot_x_vs_y),
+                new GraphType("xCount vs. Time", GraphType.GT.normal, plot_xcounts_vs_time),
+                new GraphType("yCount vs. Time", GraphType.GT.normal, plot_ycounts_vs_time),
+                new GraphType("xyCount vs. Time", GraphType.GT.dual, plot_xycounts_vs_time),
+                new GraphType("Interval vs. Time", GraphType.GT.normal, plot_interval_vs_time),
+                new GraphType("xVelocity vs. Time", GraphType.GT.normal, plot_xvelocity_vs_time),
+                new GraphType("yVelocity vs. Time", GraphType.GT.normal, plot_yvelocity_vs_time),
+                new GraphType("xyVelocity vs. Time", GraphType.GT.dual, plot_xyvelocity_vs_time),
+                new GraphType("X vs. Y", GraphType.GT.nolines, plot_x_vs_y),
             };
 
             foreach (GraphType type in grapthtypes)
@@ -129,7 +145,39 @@ namespace MouseTester
                 return;
             }
             else
+            {
                 type.PlotFunc();
+
+                if (type.DualGraph == GraphType.GT.nolines)
+                {
+                    pm.Series.Add(scatterSeries1);
+                    if (checkBoxLines.Checked)
+                    {
+                        pm.Series.Add(lineSeries1);
+                    }
+                }
+                else
+                {
+                    pm.Series.Add(scatterSeries1);
+                    if (!checkBoxLines.Checked)
+                        plot_fit(scatterSeries1, lineSeries1);
+
+                    pm.Series.Add(lineSeries1);
+                    if (checkBoxStem.Checked)
+                        pm.Series.Add(stemSeries1);
+
+                    if (type.DualGraph == GraphType.GT.dual)
+                    {
+                        pm.Series.Add(scatterSeries2);
+                        if (!checkBoxLines.Checked)
+                            plot_fit(scatterSeries2, lineSeries2);
+
+                        pm.Series.Add(lineSeries2);
+                        if (checkBoxStem.Checked)
+                            pm.Series.Add(stemSeries2);
+                    }
+                }
+            }
 
             var linearAxis1 = new LinearAxis();
             linearAxis1.AbsoluteMinimum = x_min - (x_max - x_min) / 20.0;
@@ -248,20 +296,6 @@ namespace MouseTester
                 lineSeries1.Points.Add(new DataPoint(x, y));
                 stemSeries1.Points.Add(new DataPoint(x, y));
             }
-
-            PlotModel pm = plot1.Model;
-
-            pm.Series.Add(scatterSeries1);
-            if (!checkBoxLines.Checked)
-            {
-                plot_fit(scatterSeries1, lineSeries1);
-            }
-            pm.Series.Add(lineSeries1);
-            if (checkBoxStem.Checked)
-            {
-                pm.Series.Add(stemSeries1);
-            }
-
         }
 
         private void plot_ycounts_vs_time()
@@ -277,19 +311,6 @@ namespace MouseTester
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
                 lineSeries1.Points.Add(new DataPoint(x, y));
                 stemSeries1.Points.Add(new DataPoint(x, y));
-            }
-
-            PlotModel pm = plot1.Model;
-
-            pm.Series.Add(scatterSeries1);
-            if (!checkBoxLines.Checked)
-            {
-                plot_fit(scatterSeries1, lineSeries1);
-            }
-            pm.Series.Add(lineSeries1);
-            if (checkBoxStem.Checked)
-            {
-                pm.Series.Add(stemSeries1);
             }
         }
 
@@ -317,24 +338,6 @@ namespace MouseTester
                 lineSeries2.Points.Add(new DataPoint(x, y));
                 stemSeries2.Points.Add(new DataPoint(x, y));
             }
-
-            PlotModel pm = plot1.Model;
-
-            pm.Series.Add(scatterSeries1);
-            pm.Series.Add(scatterSeries2);
-            if (!checkBoxLines.Checked)
-            {
-                plot_fit(scatterSeries1, lineSeries1);
-                plot_fit(scatterSeries2, lineSeries2);
-            }
-            pm.Series.Add(lineSeries1);
-            pm.Series.Add(lineSeries2);
-            if (checkBoxStem.Checked)
-            {
-                pm.Series.Add(stemSeries1);
-                pm.Series.Add(stemSeries2);
-            }
-
         }
 
         private void plot_interval_vs_time()
@@ -358,19 +361,6 @@ namespace MouseTester
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
                 lineSeries1.Points.Add(new DataPoint(x, y));
                 stemSeries1.Points.Add(new DataPoint(x, y));
-            }
-
-            PlotModel pm = plot1.Model;
-
-            pm.Series.Add(scatterSeries1);
-            if (!checkBoxLines.Checked)
-            {
-                plot_fit(scatterSeries1, lineSeries1);
-            }
-            pm.Series.Add(lineSeries1);
-            if (checkBoxStem.Checked)
-            {
-                pm.Series.Add(stemSeries1);
             }
         }
 
@@ -403,19 +393,6 @@ namespace MouseTester
             {
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
-
-            PlotModel pm = plot1.Model;
-
-            pm.Series.Add(scatterSeries1);
-            if (!checkBoxLines.Checked)
-            {
-                plot_fit(scatterSeries1, lineSeries1);
-            }
-            pm.Series.Add(lineSeries1);
-            if (checkBoxStem.Checked)
-            {
-                pm.Series.Add(stemSeries1);
-            }
         }
 
         private void plot_yvelocity_vs_time()
@@ -446,19 +423,6 @@ namespace MouseTester
             else
             {
                 MessageBox.Show("CPI value is invalid, please run Measure");
-            }
-
-            PlotModel pm = plot1.Model;
-
-            pm.Series.Add(scatterSeries1);
-            if (!checkBoxLines.Checked)
-            {
-                plot_fit(scatterSeries1, lineSeries1);
-            }
-            pm.Series.Add(lineSeries1);
-            if (checkBoxStem.Checked)
-            {
-                pm.Series.Add(stemSeries1);
             }
         }
 
@@ -509,24 +473,6 @@ namespace MouseTester
             {
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
-
-            PlotModel pm = plot1.Model;
-
-            pm.Series.Add(scatterSeries1);
-            pm.Series.Add(scatterSeries2);
-            if (!checkBoxLines.Checked)
-            {
-                plot_fit(scatterSeries1, lineSeries1);
-                plot_fit(scatterSeries2, lineSeries2);
-            }
-            pm.Series.Add(lineSeries1);
-            pm.Series.Add(lineSeries2);
-            if (checkBoxStem.Checked)
-            {
-                pm.Series.Add(stemSeries1);
-                pm.Series.Add(stemSeries2);
-            }
-
         }
 
         private void plot_x_vs_y()
@@ -544,14 +490,6 @@ namespace MouseTester
                 update_minmax(y, y);
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
                 lineSeries1.Points.Add(new DataPoint(x, y));
-            }
-
-            PlotModel pm = plot1.Model;
-
-            pm.Series.Add(scatterSeries1);
-            if (checkBoxLines.Checked)
-            {
-                pm.Series.Add(lineSeries1);
             }
         }
 
