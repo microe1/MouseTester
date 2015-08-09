@@ -646,7 +646,11 @@ namespace MouseTester
             saveFileDialog1.FilterIndex = 1;
             if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                MousePlot.Export(this.plot1.Model, saveFileDialog1.FileName, 800, 600);
+                int width = checkBoxSize.Checked ? 800 : (int)this.plot1.Model.Width;
+                int height = checkBoxSize.Checked ? 600 : (int)this.plot1.Model.Height;
+                Brush backgnd = checkBoxBgnd.Checked ? null : new SolidBrush(Color.White);
+
+                MousePlot.Export(this.plot1.Model, saveFileDialog1.FileName, width, height, backgnd);
             }         
         }
 
