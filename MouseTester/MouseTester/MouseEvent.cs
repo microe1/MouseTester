@@ -12,8 +12,13 @@ namespace MouseTester
         public int lasty;
         public double ts;
 
-        public MouseEvent(ushort buttonflags, int lastx, int lasty, double ts)
+        public IntPtr hDevice;
+
+        public uint index; //used for graphing, creating a virtual "common index" for each event: if they were in same log and ordered by ts
+
+        public MouseEvent(IntPtr hDevice, ushort buttonflags, int lastx, int lasty, double ts)
         {
+            this.hDevice = hDevice;
             this.buttonflags = buttonflags;
             this.lastx = lastx;
             this.lasty = lasty;

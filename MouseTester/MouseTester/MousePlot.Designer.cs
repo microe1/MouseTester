@@ -128,6 +128,7 @@
             this.checkBoxLines.TabIndex = 9;
             this.checkBoxLines.Text = "Lines";
             this.checkBoxLines.UseVisualStyleBackColor = true;
+            this.checkBoxLines.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
             // 
             // checkBoxStem
             // 
@@ -138,6 +139,7 @@
             this.checkBoxStem.TabIndex = 8;
             this.checkBoxStem.Text = "Stem";
             this.checkBoxStem.UseVisualStyleBackColor = true;
+            this.checkBoxStem.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
             // 
             // buttonSavePNG
             // 
@@ -168,6 +170,7 @@
             this.numericUpDownEnd.Name = "numericUpDownEnd";
             this.numericUpDownEnd.Size = new System.Drawing.Size(88, 20);
             this.numericUpDownEnd.TabIndex = 2;
+            this.numericUpDownEnd.ValueChanged += new System.EventHandler(this.numericUpDownEnd_ValueChanged);
             // 
             // groupBox2
             // 
@@ -187,6 +190,7 @@
             this.numericUpDownStart.Name = "numericUpDownStart";
             this.numericUpDownStart.Size = new System.Drawing.Size(88, 20);
             this.numericUpDownStart.TabIndex = 3;
+            this.numericUpDownStart.ValueChanged += new System.EventHandler(this.numericUpDownStart_ValueChanged);
             // 
             // groupBox1
             // 
@@ -208,6 +212,7 @@
             this.comboBoxPlotType.Name = "comboBoxPlotType";
             this.comboBoxPlotType.Size = new System.Drawing.Size(118, 21);
             this.comboBoxPlotType.TabIndex = 1;
+            this.comboBoxPlotType.SelectedIndexChanged += new System.EventHandler(this.Refresh_Plot_Helper);
             // 
             // MousePlot
             // 

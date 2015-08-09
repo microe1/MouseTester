@@ -19,7 +19,7 @@ namespace MouseTester
     
     public partial class MousePlot : Form
     {
-        delegate void GraphFunction();
+        delegate void GraphFunction(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp);
 
         class GraphType
         {
@@ -54,7 +54,112 @@ namespace MouseTester
             }
         }
 
-        private MouseLog mlog;
+        class GraphComponents
+        {
+            public ScatterSeries scatters;
+            public LineSeries lines;
+            public StemSeries stems;
+
+            public GraphComponents(OxyColor color)
+            {
+                scatters = new ScatterSeries
+                {
+                    BinSize = 8,
+                    MarkerFill = color,
+                    MarkerSize = 2.0,
+                    MarkerStroke = color,
+                    MarkerStrokeThickness = 1.0,
+                    MarkerType = MarkerType.Circle
+                };
+
+                lines = new LineSeries
+                {
+                    Color = color,
+                    LineStyle = LineStyle.Solid,
+                    StrokeThickness = 1.0,
+                    Smooth = true
+                };
+
+                stems = new StemSeries
+                {
+                    Color = color,
+                    StrokeThickness = 1.0,
+                };
+            }
+
+            public void Add(double x, double y, bool stem = true)
+            {
+                scatters.Points.Add(new ScatterPoint(x, y));
+                lines.Points.Add(new DataPoint(x, y));
+                if (stem)
+                    stems.Points.Add(new DataPoint(x, y));
+            }
+
+            public void Add(PlotModel pm, bool line)
+            {
+                pm.Series.Add(scatters);
+                if (line)
+                    pm.Series.Add(lines);
+            }
+
+            public void Add(PlotModel pm, bool line, bool stem)
+            {
+                pm.Series.Add(scatters);
+                if (!line)
+                    plot_fit();
+
+                pm.Series.Add(lines);
+                if (stem)
+                    pm.Series.Add(stems);
+            }
+
+#if true
+            // Window based smoothing
+            private void plot_fit()
+            {
+                double sum = 0.0;
+
+                lines.Points.Clear();
+
+                for (int i = 0; ((i < 8) && (i < scatters.Points.Count)); i++)
+                {
+                    sum = sum + scatters.Points[i].Y;
+                }
+
+                for (int i = 3; i < scatters.Points.Count - 5; i++)
+                {
+                    double x = (scatters.Points[i].X + scatters.Points[i + 1].X) / 2.0;
+                    double y = sum;
+                    lines.Points.Add(new DataPoint(x, y / 8.0));
+                    sum = sum - scatters.Points[i - 3].Y;
+                    sum = sum + scatters.Points[i + 5].Y;
+                }
+            }
+#else
+// Time based smoothing
+        private void plot_fit(ScatterSeries scatterSeries1, LineSeries lineSeries1)
+        {
+            double hz = 125;
+            double ms = 1000.0 / hz;
+            lineSeries1.Points.Clear();
+
+            int ind = 0;
+            for (double x = scatterSeries1.Points[0].X; x <= scatterSeries1.Points[scatterSeries1.Points.Count - 1].X; x += ms)
+            {
+                double sum = 0.0;
+                while (scatterSeries1.Points[ind].X <= x)
+                {
+                    sum += scatterSeries1.Points[ind++].Y;
+                }
+                lineSeries1.Points.Add(new DataPoint(x - (ms / 2.0), sum / ms));
+            }
+        }
+#endif
+        }
+
+        private GraphComponents BlueComponent, RedComponent, GreenComponent, YellowComponent;
+
+        private MouseLog mlog, mlog2;
         private int last_start;
         private int last_end;
         double x_min;
@@ -64,14 +169,18 @@ namespace MouseTester
         private string xlabel = "";
         private string ylabel = "";
 
-        ScatterSeries scatterSeries1, scatterSeries2;
-        LineSeries lineSeries1, lineSeries2;
-        StemSeries stemSeries1, stemSeries2;
+        private bool dual = false;
+        private bool init = true;
 
-        public MousePlot(MouseLog Mlog)
+        public MousePlot(MouseLog Mlog, MouseLog Mlog2)
         {
             InitializeComponent();
+
             this.mlog = Mlog;
+            this.mlog2 = Mlog2;
+            if (mlog2 != null)
+                dual = true;
+
             this.last_start = 0;
             this.last_end = this.mlog.Events.Count - 1;
             initialize_plot();
@@ -92,7 +201,6 @@ namespace MouseTester
                 comboBoxPlotType.Items.Add(type);
 
             this.comboBoxPlotType.SelectedIndex = 0;
-            this.comboBoxPlotType.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
 
             this.numericUpDownStart.Minimum = 0;
             this.numericUpDownStart.Maximum = this.mlog.Events.Count - 1;
@@ -104,22 +212,18 @@ namespace MouseTester
             this.numericUpDownEnd.Value = last_end;
             this.numericUpDownEnd.ValueChanged += new System.EventHandler(this.numericUpDownEnd_ValueChanged);
 
-            this.checkBoxStem.Checked = false;
-            this.checkBoxStem.CheckedChanged += new System.EventHandler(this.checkBoxStem_CheckedChanged);
-
-            this.checkBoxLines.Checked = false;
-            this.checkBoxLines.CheckedChanged += new System.EventHandler(this.checkBoxLines_CheckedChanged);
-
+            init = false;
             refresh_plot();
         }
 
         private void initialize_plot()
         {
-            var pm = new PlotModel(this.mlog.Desc.ToString())
+            var pm = new PlotModel()
             {
+                Title = mlog.Desc + (dual ? " vs. " + mlog2.Desc : ""),
+                Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" : ""),
                 PlotType = PlotType.Cartesian,
-                Background = OxyColors.White,
-                Subtitle = this.mlog.Cpi.ToString() + " cpi"
+                Background = OxyColors.White
             };
             plot1.Model = pm;
         }
@@ -134,8 +238,10 @@ namespace MouseTester
 
             if (checkBoxLines.Checked)
             {
-                lineSeries1.Smooth = false;
-                lineSeries2.Smooth = false;
+                BlueComponent.lines.Smooth = false;
+                RedComponent.lines.Smooth = false;
+                GreenComponent.lines.Smooth = false;
+                YellowComponent.lines.Smooth = false;
             }
 
             GraphType type = comboBoxPlotType.SelectedItem as GraphType;
@@ -146,37 +252,31 @@ namespace MouseTester
             }
             else
             {
-                type.PlotFunc();
+                reset_minmax();
 
+                type.PlotFunc(mlog, BlueComponent, RedComponent);
                 if (type.DualGraph == GraphType.GT.nolines)
-                {
-                    pm.Series.Add(scatterSeries1);
-                    if (checkBoxLines.Checked)
-                    {
-                        pm.Series.Add(lineSeries1);
-                    }
-                }
+                    BlueComponent.Add(pm, checkBoxLines.Checked);
                 else
                 {
-                    pm.Series.Add(scatterSeries1);
-                    if (!checkBoxLines.Checked)
-                        plot_fit(scatterSeries1, lineSeries1);
-
-                    pm.Series.Add(lineSeries1);
-                    if (checkBoxStem.Checked)
-                        pm.Series.Add(stemSeries1);
-
+                    BlueComponent.Add(pm, checkBoxLines.Checked, checkBoxStem.Checked);
                     if (type.DualGraph == GraphType.GT.dual)
-                    {
-                        pm.Series.Add(scatterSeries2);
-                        if (!checkBoxLines.Checked)
-                            plot_fit(scatterSeries2, lineSeries2);
+                        RedComponent.Add(pm, checkBoxLines.Checked, checkBoxStem.Checked);
+                }
 
-                        pm.Series.Add(lineSeries2);
-                        if (checkBoxStem.Checked)
-                            pm.Series.Add(stemSeries2);
+                if (dual)
+                {
+                    type.PlotFunc(mlog2, GreenComponent, YellowComponent);
+                    if (type.DualGraph == GraphType.GT.nolines)
+                        GreenComponent.Add(pm, checkBoxLines.Checked);
+                    else
+                    {
+                        GreenComponent.Add(pm, checkBoxLines.Checked, checkBoxStem.Checked);
+                        if (type.DualGraph == GraphType.GT.dual)
+                            YellowComponent.Add(pm, checkBoxLines.Checked, checkBoxStem.Checked);
                     }
                 }
+
             }
 
             var linearAxis1 = new LinearAxis();
@@ -205,53 +305,13 @@ namespace MouseTester
 
         private void ResetPlotComponents()
         {
-            scatterSeries1 = new ScatterSeries
+            BlueComponent = new GraphComponents(OxyColors.Blue);
+            RedComponent = new GraphComponents(OxyColors.Red);
+            if (dual)
             {
-                BinSize = 8,
-                MarkerFill = OxyColors.Blue,
-                MarkerSize = 2.0,
-                MarkerStroke = OxyColors.Blue,
-                MarkerStrokeThickness = 1.0,
-                MarkerType = MarkerType.Circle
-            };
-
-            scatterSeries2 = new ScatterSeries
-            {
-                BinSize = 8,
-                MarkerFill = OxyColors.Red,
-                MarkerSize = 2.0,
-                MarkerStroke = OxyColors.Red,
-                MarkerStrokeThickness = 1.0,
-                MarkerType = MarkerType.Circle
-            };
-
-            lineSeries1 = new LineSeries
-            {
-                Color = OxyColors.Blue,
-                LineStyle = LineStyle.Solid,
-                StrokeThickness = 1.0,
-                Smooth = true
-            };
-
-            lineSeries2 = new LineSeries
-            {
-                Color = OxyColors.Red,
-                LineStyle = LineStyle.Solid,
-                StrokeThickness = 1.0,
-                Smooth = true
-            };
-
-            stemSeries1 = new StemSeries
-            {
-                Color = OxyColors.Blue,
-                StrokeThickness = 1.0,
-            };
-
-            stemSeries2 = new StemSeries
-            {
-                Color = OxyColors.Red,
-                StrokeThickness = 1.0
-            };
+                GreenComponent = new GraphComponents(OxyColors.Green);
+                YellowComponent = new GraphComponents(OxyColors.Orange);
+            }
         }
 
         private void reset_minmax()
@@ -261,7 +321,6 @@ namespace MouseTester
             y_min = double.MaxValue;
             y_max = double.MinValue;
         }
-
         private void update_minmax(double x, double y)
         {
             if (x < x_min)
@@ -282,72 +341,61 @@ namespace MouseTester
             }
         }
 
-        private void plot_xcounts_vs_time()
+        private void plot_xcounts_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "xCounts";
-            reset_minmax();
-            for (int i = last_start; i <= last_end; i++)
+            
+            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
             {
-                double x = this.mlog.Events[i].ts;
-                double y = this.mlog.Events[i].lastx;
+                double x = mlog.Events[i].ts;
+                double y = mlog.Events[i].lastx;
                 update_minmax(x, y);
-                scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                lineSeries1.Points.Add(new DataPoint(x, y));
-                stemSeries1.Points.Add(new DataPoint(x, y));
+                main_comp.Add(x, y);
             }
         }
-
-        private void plot_ycounts_vs_time()
+        private void plot_ycounts_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "yCounts";
-            reset_minmax();
-            for (int i = last_start; i <= last_end; i++)
+
+            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
             {
-                double x = this.mlog.Events[i].ts;
-                double y = this.mlog.Events[i].lasty;
+                double x = mlog.Events[i].ts;
+                double y = mlog.Events[i].lasty;
                 update_minmax(x, y);
-                scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                lineSeries1.Points.Add(new DataPoint(x, y));
-                stemSeries1.Points.Add(new DataPoint(x, y));
+                main_comp.Add(x, y);
             }
         }
-
-        private void plot_xycounts_vs_time()
+        private void plot_xycounts_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "Counts [x = Blue, y = Red]";
-            reset_minmax();
-            for (int i = last_start; i <= last_end; i++)
+
+            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
             {
-                double x = this.mlog.Events[i].ts;
-                double y = this.mlog.Events[i].lastx;
+                double x = mlog.Events[i].ts;
+                double y = mlog.Events[i].lastx;
                 update_minmax(x, y);
-                scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                lineSeries1.Points.Add(new DataPoint(x, y));
-                stemSeries1.Points.Add(new DataPoint(x, y));
+                main_comp.Add(x, y);
             }
 
-            for (int i = last_start; i <= last_end; i++)
+            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
             {
-                double x = this.mlog.Events[i].ts;
-                double y = this.mlog.Events[i].lasty;
+                double x = mlog.Events[i].ts;
+                double y = mlog.Events[i].lasty;
                 update_minmax(x, y);
-                scatterSeries2.Points.Add(new ScatterPoint(x, y));
-                lineSeries2.Points.Add(new DataPoint(x, y));
-                stemSeries2.Points.Add(new DataPoint(x, y));
+                sec_comp.Add(x, y);
             }
         }
-
-        private void plot_interval_vs_time()
+        private void plot_interval_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "Update Time (ms)";
-            reset_minmax();
-            for (int i = last_start; i <= last_end; i++)
+
+            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
             {
-                double x = this.mlog.Events[i].ts;
+                double x = mlog.Events[i].ts;
                 double y;
                 if (i == 0)
                 {
@@ -355,25 +403,22 @@ namespace MouseTester
                 }
                 else
                 {
-                    y = this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts;
+                    y = mlog.Events[i].ts - mlog.Events[i - 1].ts;
                 }
                 update_minmax(x, y);
-                scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                lineSeries1.Points.Add(new DataPoint(x, y));
-                stemSeries1.Points.Add(new DataPoint(x, y));
+                main_comp.Add(x, y);
             }
         }
-
-        private void plot_xvelocity_vs_time()
+        private void plot_xvelocity_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "xVelocity (m/s)";
-            reset_minmax();
-            if (this.mlog.Cpi > 0)
+
+            if (mlog.Cpi > 0)
             {
-                for (int i = last_start; i <= last_end; i++)
+                for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
                 {
-                    double x = this.mlog.Events[i].ts;
+                    double x = mlog.Events[i].ts;
                     double y;
                     if (i == 0)
                     {
@@ -381,12 +426,10 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (this.mlog.Events[i].lastx) / (this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts) / this.mlog.Cpi * 25.4;
+                        y = (mlog.Events[i].lastx) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
-                    scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                    lineSeries1.Points.Add(new DataPoint(x, y));
-                    stemSeries1.Points.Add(new DataPoint(x, y));
+                    main_comp.Add(x, y);
                 }
             }
             else
@@ -394,17 +437,16 @@ namespace MouseTester
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
         }
-
-        private void plot_yvelocity_vs_time()
+        private void plot_yvelocity_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "yVelocity (m/s)";
-            reset_minmax();
-            if (this.mlog.Cpi > 0)
+
+            if (mlog.Cpi > 0)
             {
-                for (int i = last_start; i <= last_end; i++)
+                for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
                 {
-                    double x = this.mlog.Events[i].ts;
+                    double x = mlog.Events[i].ts;
                     double y;
                     if (i == 0)
                     {
@@ -412,12 +454,10 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (this.mlog.Events[i].lasty) / (this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts) / this.mlog.Cpi * 25.4;
+                        y = (mlog.Events[i].lasty) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
-                    scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                    lineSeries1.Points.Add(new DataPoint(x, y));
-                    stemSeries1.Points.Add(new DataPoint(x, y));
+                    main_comp.Add(x, y);
                 }
             }
             else
@@ -425,17 +465,16 @@ namespace MouseTester
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
         }
-
-        private void plot_xyvelocity_vs_time()
+        private void plot_xyvelocity_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "Velocity (m/s) [x = Blue, y = Red]";
-            reset_minmax();
-            if (this.mlog.Cpi > 0)
+
+            if (mlog.Cpi > 0)
             {
-                for (int i = last_start; i <= last_end; i++)
+                for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
                 {
-                    double x = this.mlog.Events[i].ts;
+                    double x = mlog.Events[i].ts;
                     double y;
                     if (i == 0)
                     {
@@ -443,17 +482,15 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (this.mlog.Events[i].lastx) / (this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts) / this.mlog.Cpi * 25.4;
+                        y = (mlog.Events[i].lastx) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
-                    scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                    lineSeries1.Points.Add(new DataPoint(x, y));
-                    stemSeries1.Points.Add(new DataPoint(x, y));
+                    main_comp.Add(x, y);
                 }
 
-                for (int i = last_start; i <= last_end; i++)
+                for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
                 {
-                    double x = this.mlog.Events[i].ts;
+                    double x = mlog.Events[i].ts;
                     double y;
                     if (i == 0)
                     {
@@ -461,12 +498,10 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (this.mlog.Events[i].lasty) / (this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts) / this.mlog.Cpi * 25.4;
+                        y = (mlog.Events[i].lasty) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
-                    scatterSeries2.Points.Add(new ScatterPoint(x, y));
-                    lineSeries2.Points.Add(new DataPoint(x, y));
-                    stemSeries2.Points.Add(new DataPoint(x, y));
+                    sec_comp.Add(x, y);
                 }
             }
             else
@@ -474,92 +509,37 @@ namespace MouseTester
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
         }
-
-        private void plot_x_vs_y()
+        private void plot_x_vs_y(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "xCounts";
             ylabel = "yCounts";
-            reset_minmax();
+
             double x = 0.0;
             double y = 0.0;
-            for (int i = last_start; i <= last_end; i++)
+            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
             {
-                x += this.mlog.Events[i].lastx;
-                y += this.mlog.Events[i].lasty;
+                x += mlog.Events[i].lastx;
+                y += mlog.Events[i].lasty;
                 update_minmax(x, x);
                 update_minmax(y, y);
-                scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                lineSeries1.Points.Add(new DataPoint(x, y));
+                main_comp.Add(x, y, false);
             }
-        }
-
-#if true
-// Window based smoothing
-        private void plot_fit(ScatterSeries scatterSeries1, LineSeries lineSeries1)
-        {
-            double sum = 0.0;
-
-            lineSeries1.Points.Clear();
-
-            for (int i = 0; ((i < 8) && (i < scatterSeries1.Points.Count)); i++)
-            {
-                sum = sum + scatterSeries1.Points[i].Y;
-            }
-
-            for (int i = 3; i < scatterSeries1.Points.Count - 5; i++)
-            {
-                double x = (scatterSeries1.Points[i].X + scatterSeries1.Points[i + 1].X) / 2.0;
-                double y = sum;
-                lineSeries1.Points.Add(new DataPoint(x, y / 8.0));
-                sum = sum - scatterSeries1.Points[i - 3].Y;
-                sum = sum + scatterSeries1.Points[i + 5].Y;
-            }
-        }
-#else
-// Time based smoothing
-        private void plot_fit(ScatterSeries scatterSeries1, LineSeries lineSeries1)
-        {
-            double hz = 125;
-            double ms = 1000.0 / hz;
-            lineSeries1.Points.Clear();
-
-            int ind = 0;
-            for (double x = scatterSeries1.Points[0].X; x <= scatterSeries1.Points[scatterSeries1.Points.Count - 1].X; x += ms)
-            {
-                double sum = 0.0;
-                while (scatterSeries1.Points[ind].X <= x)
-                {
-                    sum += scatterSeries1.Points[ind++].Y;
-                }
-                lineSeries1.Points.Add(new DataPoint(x - (ms / 2.0), sum / ms));
-            }
-        }
-#endif
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            refresh_plot();
         }
 
         private void numericUpDownStart_ValueChanged(object sender, EventArgs e)
         {
             if (numericUpDownStart.Value >= numericUpDownEnd.Value)
-            {
                 numericUpDownStart.Value = last_start;
-            }
             else
             {
                 last_start = (int)numericUpDownStart.Value;
                 refresh_plot();
             }
         }
-
         private void numericUpDownEnd_ValueChanged(object sender, EventArgs e)
         {
             if (numericUpDownEnd.Value <= numericUpDownStart.Value)
-            {
                 numericUpDownEnd.Value = last_end;
-            }
             else
             {
                 last_end = (int)numericUpDownEnd.Value;
@@ -567,13 +547,11 @@ namespace MouseTester
             }
         }
 
-        private void checkBoxStem_CheckedChanged(object sender, EventArgs e)
+        private void Refresh_Plot_Helper(object sender, EventArgs e)
         {
-            refresh_plot();
-        }
+            if (init)
+                return;
 
-        private void checkBoxLines_CheckedChanged(object sender, EventArgs e)
-        {
             refresh_plot();
         }
 

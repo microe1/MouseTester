@@ -186,7 +186,7 @@ namespace MouseTester
                         {
                             if (mevent != null)
                             {
-                                MouseEvent meventinfo = new MouseEvent(raw.mouse.buttonsStr.usButtonFlags , raw.mouse.lLastX, -raw.mouse.lLastY,
+                                MouseEvent meventinfo = new MouseEvent(raw.header.hDevice, raw.mouse.buttonsStr.usButtonFlags , raw.mouse.lLastX, -raw.mouse.lLastY,
                                                                        stopWatch.ElapsedTicks * 1e3 / Stopwatch.Frequency);
                                 mevent(this, meventinfo);
                             }
