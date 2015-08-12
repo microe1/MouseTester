@@ -30,6 +30,8 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.plot1 = new OxyPlot.WindowsForms.Plot();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.numericUpDownDelay = new System.Windows.Forms.NumericUpDown();
             this.checkBoxSize = new System.Windows.Forms.CheckBox();
             this.checkBoxBgnd = new System.Windows.Forms.CheckBox();
             this.checkBoxLines = new System.Windows.Forms.CheckBox();
@@ -45,6 +47,8 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelay)).BeginInit();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownEnd)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -65,6 +69,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer1.Panel2.Controls.Add(this.checkBoxSize);
             this.splitContainer1.Panel2.Controls.Add(this.checkBoxBgnd);
             this.splitContainer1.Panel2.Controls.Add(this.checkBoxLines);
@@ -92,6 +97,35 @@
             this.plot1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
             this.plot1.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
             this.plot1.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.numericUpDownDelay);
+            this.groupBox4.Location = new System.Drawing.Point(360, 7);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(100, 50);
+            this.groupBox4.TabIndex = 12;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Input lag delay";
+            // 
+            // numericUpDownDelay
+            // 
+            this.numericUpDownDelay.DecimalPlaces = 1;
+            this.numericUpDownDelay.Location = new System.Drawing.Point(7, 20);
+            this.numericUpDownDelay.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericUpDownDelay.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownDelay.Name = "numericUpDownDelay";
+            this.numericUpDownDelay.Size = new System.Drawing.Size(87, 20);
+            this.numericUpDownDelay.TabIndex = 0;
+            this.numericUpDownDelay.ValueChanged += new System.EventHandler(this.numericUpDownDelay_ValueChanged);
             // 
             // checkBoxSize
             // 
@@ -122,7 +156,7 @@
             // checkBoxLines
             // 
             this.checkBoxLines.AutoSize = true;
-            this.checkBoxLines.Location = new System.Drawing.Point(360, 17);
+            this.checkBoxLines.Location = new System.Drawing.Point(466, 17);
             this.checkBoxLines.Name = "checkBoxLines";
             this.checkBoxLines.Size = new System.Drawing.Size(51, 17);
             this.checkBoxLines.TabIndex = 9;
@@ -133,7 +167,7 @@
             // checkBoxStem
             // 
             this.checkBoxStem.AutoSize = true;
-            this.checkBoxStem.Location = new System.Drawing.Point(360, 40);
+            this.checkBoxStem.Location = new System.Drawing.Point(466, 40);
             this.checkBoxStem.Name = "checkBoxStem";
             this.checkBoxStem.Size = new System.Drawing.Size(50, 17);
             this.checkBoxStem.TabIndex = 8;
@@ -223,11 +257,14 @@
             this.MinimumSize = new System.Drawing.Size(808, 627);
             this.Name = "MousePlot";
             this.Text = "MousePlot";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelay)).EndInit();
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownEnd)).EndInit();
             this.groupBox2.ResumeLayout(false);
@@ -252,5 +289,7 @@
         private System.Windows.Forms.CheckBox checkBoxLines;
         private System.Windows.Forms.CheckBox checkBoxSize;
         private System.Windows.Forms.CheckBox checkBoxBgnd;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.NumericUpDown numericUpDownDelay;
     }
 }

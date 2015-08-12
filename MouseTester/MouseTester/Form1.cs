@@ -123,20 +123,10 @@ namespace MouseTester
             }
             else if (this.test_state == state.collect)
             {
-                if (dual_state == dualstate.ready)
-                {
-                    if (mevent.hDevice == mlog1.hDevice)
-                        mlog1.Events.Add(mevent);
-                    else if (mevent.hDevice == mlog2.hDevice)
-                        mlog2.Events.Add(mevent);
-                }
-                else
-                    this.mlog.Add(mevent);
-
                 if (mevent.buttonflags == 0x0002)
                 {
                     double ts_min = 0.0;
-                    
+
                     if (mlog1.Events.Count > 0)
                         ts_min = mlog1.Events[0].ts;
 
@@ -157,6 +147,18 @@ namespace MouseTester
                                          "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
                     this.toolStripStatusLabel1.Text = "";
                     this.test_state = state.idle;
+                }
+                else
+                {
+                    if (dual_state == dualstate.ready)
+                    {
+                        if (mevent.hDevice == mlog1.hDevice)
+                            mlog1.Events.Add(mevent);
+                        else if (mevent.hDevice == mlog2.hDevice)
+                            mlog2.Events.Add(mevent);
+                    }
+                    else
+                        this.mlog.Add(mevent);
                 }
             }
             else if (this.test_state == state.log)
@@ -273,11 +275,11 @@ namespace MouseTester
                 return;
             }
 
-            if (this.mlog.Events.Count > 0)
+            /*if (this.mlog.Events.Count > 0)
             {
                 MousePlot mousePlot = new MousePlot(this.mlog, null);
                 mousePlot.Show();
-            }
+            }*/
         }
 
         private void buttonSave_Click(object sender, EventArgs e)

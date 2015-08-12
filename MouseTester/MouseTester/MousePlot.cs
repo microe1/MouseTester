@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -19,7 +20,7 @@ namespace MouseTester
     
     public partial class MousePlot : Form
     {
-        delegate void GraphFunction(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp);
+        delegate void GraphFunction(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp);
 
         class GraphType
         {
@@ -160,6 +161,7 @@ namespace MouseTester
         private GraphComponents BlueComponent, RedComponent, GreenComponent, YellowComponent;
 
         private MouseLog mlog, mlog2;
+        private List<MouseEvent> events = new List<MouseEvent>();
         private int last_start;
         private int last_end;
         double x_min;
@@ -181,8 +183,10 @@ namespace MouseTester
             if (mlog2 != null)
                 dual = true;
 
+            IndexMouseLogs();
+
             this.last_start = 0;
-            this.last_end = this.mlog.Events.Count - 1;
+            this.last_end = events.Count - 1;
             initialize_plot();
 
             GraphType[] grapthtypes = 
@@ -191,6 +195,7 @@ namespace MouseTester
                 new GraphType("yCount vs. Time", GraphType.GT.normal, plot_ycounts_vs_time),
                 new GraphType("xyCount vs. Time", GraphType.GT.dual, plot_xycounts_vs_time),
                 new GraphType("Interval vs. Time", GraphType.GT.normal, plot_interval_vs_time),
+                new GraphType("Frequency vs. Time", GraphType.GT.normal, plot_frequency_vs_time),
                 new GraphType("xVelocity vs. Time", GraphType.GT.normal, plot_xvelocity_vs_time),
                 new GraphType("yVelocity vs. Time", GraphType.GT.normal, plot_yvelocity_vs_time),
                 new GraphType("xyVelocity vs. Time", GraphType.GT.dual, plot_xyvelocity_vs_time),
@@ -202,13 +207,15 @@ namespace MouseTester
 
             this.comboBoxPlotType.SelectedIndex = 0;
 
+            this.groupBox4.Enabled = dual;
+
             this.numericUpDownStart.Minimum = 0;
-            this.numericUpDownStart.Maximum = this.mlog.Events.Count - 1;
+            this.numericUpDownStart.Maximum = last_end;
             this.numericUpDownStart.Value = last_start;
             this.numericUpDownStart.ValueChanged += new System.EventHandler(this.numericUpDownStart_ValueChanged);
 
             this.numericUpDownEnd.Minimum = 0;
-            this.numericUpDownEnd.Maximum = this.mlog.Events.Count - 1;
+            this.numericUpDownEnd.Maximum = last_end;
             this.numericUpDownEnd.Value = last_end;
             this.numericUpDownEnd.ValueChanged += new System.EventHandler(this.numericUpDownEnd_ValueChanged);
 
@@ -216,18 +223,63 @@ namespace MouseTester
             refresh_plot();
         }
 
+        private void IndexMouseLogs()
+        {
+            mlog.Events.Sort((x,y) => x.ts.CompareTo(y.ts));
+
+            if (mlog.Events.Count > 0)
+                mlog.Events[0].lastts = 0;
+
+            for (int i = 1; i < mlog.Events.Count; ++i)
+            {
+                mlog.Events[i].hDevice = mlog.hDevice;
+                mlog.Events[i].lastts = mlog.Events[i - 1].ts;
+            }
+
+            if (!dual)
+                foreach (MouseEvent ev in mlog.Events)
+                    events.Add(ev);
+            else
+            {
+                mlog2.Events.Sort((x,y) => x.ts.CompareTo(y.ts));
+
+                if (mlog2.Events.Count > 0)
+                    mlog2.Events[0].lastts = 0;
+
+                for (int i = 1; i < mlog2.Events.Count; ++i)
+                {
+                    mlog2.Events[i].hDevice = mlog2.hDevice;
+                    mlog2.Events[i].lastts = mlog2.Events[i - 1].ts;
+                }
+
+                int i1 = 0, i2 = 0;
+
+                while (i1 < mlog.Events.Count && i2 < mlog2.Events.Count)
+                {   // it could have been written in one line, but it would kill readability and i doubt performance advantage
+                    MouseEvent min = null;
+                    if (i1 == mlog.Events.Count)
+                        min = mlog2.Events[i2++];
+                    else if (i2 == mlog2.Events.Count)
+                        min = mlog2.Events[i1++];
+                    else
+                        min = mlog.Events[i1].ts < mlog2.Events[i2].ts ? mlog.Events[i1++] : mlog2.Events[i2++];
+
+                    events.Add(min);
+                }
+            }
+        }
+
         private void initialize_plot()
         {
             var pm = new PlotModel()
             {
                 Title = mlog.Desc + (dual ? " vs. " + mlog2.Desc : ""),
-                Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" : ""),
+                Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" + " & " + numericUpDownDelay.Value.ToString("+#.#;-#.#;0", CultureInfo.InvariantCulture) + " ms delay" : ""),
                 PlotType = PlotType.Cartesian,
                 Background = OxyColors.White
             };
             plot1.Model = pm;
         }
-
         private void refresh_plot()
         {
             PlotModel pm = plot1.Model;
@@ -254,7 +306,7 @@ namespace MouseTester
             {
                 reset_minmax();
 
-                type.PlotFunc(mlog, BlueComponent, RedComponent);
+                type.PlotFunc(mlog, 0.0, BlueComponent, RedComponent);
                 if (type.DualGraph == GraphType.GT.nolines)
                     BlueComponent.Add(pm, checkBoxLines.Checked);
                 else
@@ -266,7 +318,7 @@ namespace MouseTester
 
                 if (dual)
                 {
-                    type.PlotFunc(mlog2, GreenComponent, YellowComponent);
+                    type.PlotFunc(mlog2, -(double)numericUpDownDelay.Value, GreenComponent, YellowComponent);
                     if (type.DualGraph == GraphType.GT.nolines)
                         GreenComponent.Add(pm, checkBoxLines.Checked);
                     else
@@ -341,61 +393,76 @@ namespace MouseTester
             }
         }
 
-        private void plot_xcounts_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
+        private void plot_xcounts_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "xCounts";
             
-            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+            for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
-                double y = mlog.Events[i].lastx;
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x =events[i].ts + delay;
+                double y =events[i].lastx;
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
         }
-        private void plot_ycounts_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
+        private void plot_ycounts_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "yCounts";
 
-            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+            for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
-                double y = mlog.Events[i].lasty;
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x =events[i].ts + delay;
+                double y =events[i].lasty;
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
         }
-        private void plot_xycounts_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
+        private void plot_xycounts_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "Counts [x = Blue, y = Red]";
 
-            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+            for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
-                double y = mlog.Events[i].lastx;
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x =events[i].ts + delay;
+                double y =events[i].lastx;
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
 
-            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+            for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
-                double y = mlog.Events[i].lasty;
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x =events[i].ts + delay;
+                double y =events[i].lasty;
                 update_minmax(x, y);
                 sec_comp.Add(x, y);
             }
         }
-        private void plot_interval_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
+        private void plot_interval_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "Update Time (ms)";
 
-            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+            for (int i = last_start; i <= last_end; i++)
             {
-                double x = mlog.Events[i].ts;
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x =events[i].ts;
                 double y;
                 if (i == 0)
                 {
@@ -403,22 +470,49 @@ namespace MouseTester
                 }
                 else
                 {
-                    y = mlog.Events[i].ts - mlog.Events[i - 1].ts;
+                    y =events[i].ts - events[i].lastts;
                 }
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
         }
-        private void plot_xvelocity_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
+        private void plot_frequency_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
+        {
+            xlabel = "Time (ms)";
+            ylabel = "Update Time (ms)";
+
+            for (int i = last_start; i <= last_end; i++)
+            {
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x = events[i].ts;
+                double y;
+                if (i == 0)
+                {
+                    y = 0.0;
+                }
+                else
+                {
+                    y = 1000.0 / (events[i].ts - events[i].lastts);
+                }
+                update_minmax(x, y);
+                main_comp.Add(x, y);
+            }
+        }
+        private void plot_xvelocity_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "xVelocity (m/s)";
 
             if (mlog.Cpi > 0)
             {
-                for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+                for (int i = last_start; i <= last_end; i++)
                 {
-                    double x = mlog.Events[i].ts;
+                    if (events[i].hDevice != mlog.hDevice)
+                        continue;
+
+                    double x = events[i].ts + delay;
                     double y;
                     if (i == 0)
                     {
@@ -426,7 +520,7 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (mlog.Events[i].lastx) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
+                        y = (events[i].lastx) / (events[i].ts - events[i].lastts) / mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
                     main_comp.Add(x, y);
@@ -437,16 +531,19 @@ namespace MouseTester
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
         }
-        private void plot_yvelocity_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
+        private void plot_yvelocity_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "yVelocity (m/s)";
 
             if (mlog.Cpi > 0)
             {
-                for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+                for (int i = last_start; i <= last_end; i++)
                 {
-                    double x = mlog.Events[i].ts;
+                    if (events[i].hDevice != mlog.hDevice)
+                        continue;
+
+                    double x =events[i].ts + delay;
                     double y;
                     if (i == 0)
                     {
@@ -454,7 +551,7 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (mlog.Events[i].lasty) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
+                        y = (events[i].lasty) / (events[i].ts - events[i].lastts) / mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
                     main_comp.Add(x, y);
@@ -465,16 +562,19 @@ namespace MouseTester
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
         }
-        private void plot_xyvelocity_vs_time(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
+        private void plot_xyvelocity_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
             ylabel = "Velocity (m/s) [x = Blue, y = Red]";
 
             if (mlog.Cpi > 0)
             {
-                for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+                for (int i = last_start; i <= last_end; i++)
                 {
-                    double x = mlog.Events[i].ts;
+                    if (events[i].hDevice != mlog.hDevice)
+                        continue;
+
+                    double x =events[i].ts + delay;
                     double y;
                     if (i == 0)
                     {
@@ -482,15 +582,18 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (mlog.Events[i].lastx) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
+                        y = (events[i].lastx) / (events[i].ts - events[i].lastts) / mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
                     main_comp.Add(x, y);
                 }
 
-                for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+                for (int i = last_start; i <= last_end; i++)
                 {
-                    double x = mlog.Events[i].ts;
+                    if (events[i].hDevice != mlog.hDevice)
+                        continue;
+
+                    double x =events[i].ts + delay;
                     double y;
                     if (i == 0)
                     {
@@ -498,7 +601,7 @@ namespace MouseTester
                     }
                     else
                     {
-                        y = (mlog.Events[i].lasty) / (mlog.Events[i].ts - mlog.Events[i - 1].ts) / mlog.Cpi * 25.4;
+                        y = (events[i].lasty) / (events[i].ts - events[i].lastts) / mlog.Cpi * 25.4;
                     }
                     update_minmax(x, y);
                     sec_comp.Add(x, y);
@@ -509,17 +612,20 @@ namespace MouseTester
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
         }
-        private void plot_x_vs_y(MouseLog mlog, GraphComponents main_comp, GraphComponents sec_comp)
+        private void plot_x_vs_y(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "xCounts";
             ylabel = "yCounts";
 
             double x = 0.0;
             double y = 0.0;
-            for (int i = last_start; i <= last_end && i < mlog.Events.Count; i++)
+            for (int i = last_start; i <= last_end; i++)
             {
-                x += mlog.Events[i].lastx;
-                y += mlog.Events[i].lasty;
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                x +=events[i].lastx;
+                y +=events[i].lasty;
                 update_minmax(x, x);
                 update_minmax(y, y);
                 main_comp.Add(x, y, false);
@@ -588,6 +694,16 @@ namespace MouseTester
                     bm.Save(fileName, ImageFormat.Png);
                 }
             }
+        }
+
+        private void numericUpDownDelay_ValueChanged(object sender, EventArgs e)
+        {
+            if (init)
+                return;
+
+            plot1.Model.Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" + " & " + numericUpDownDelay.Value.ToString("+#.#;-#.#;0", CultureInfo.InvariantCulture) + " ms delay" : "");
+
+            refresh_plot();
         }
     }
 }
