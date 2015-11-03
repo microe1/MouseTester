@@ -180,7 +180,7 @@ namespace MouseTester
 
             this.mlog = Mlog;
             this.mlog2 = Mlog2;
-            if (mlog2 != null)
+            if (mlog2 != null && mlog2.Events.Count != 0)
                 dual = true;
 
             IndexMouseLogs();
@@ -266,6 +266,12 @@ namespace MouseTester
 
                     events.Add(min);
                 }
+
+                for (; i1 < mlog.Events.Count; ++i1)
+                    events.Add(mlog.Events[i1]);
+
+                for (; i2 < mlog2.Events.Count; ++i2)
+                    events.Add(mlog2.Events[i2]);
             }
         }
 
