@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using OxyPlot;
 
@@ -14,10 +9,9 @@ namespace MouseTester
     using System.Drawing;
     using System.Drawing.Imaging;
     using OxyPlot.WindowsForms;
-    using OxyPlot.Annotations;
     using OxyPlot.Axes;
     using OxyPlot.Series;
-    
+
     public partial class MousePlot : Form
     {
         delegate void GraphFunction(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp);
@@ -31,8 +25,8 @@ namespace MouseTester
                 nolines
             }
 
-            string Name;
             public GraphFunction PlotFunc;
+            private string Name;
             private GT _DualGraph;
             public GT DualGraph 
             {
@@ -138,21 +132,21 @@ namespace MouseTester
             }
 #else
 // Time based smoothing
-        private void plot_fit(ScatterSeries scatterSeries1, LineSeries lineSeries1)
+        private void plot_fit()
         {
             double hz = 125;
             double ms = 1000.0 / hz;
-            lineSeries1.Points.Clear();
+            lines.Points.Clear();
 
             int ind = 0;
-            for (double x = scatterSeries1.Points[0].X; x <= scatterSeries1.Points[scatterSeries1.Points.Count - 1].X; x += ms)
+            for (double x = scatters.Points[0].X; x <= scatters.Points[scatters.Points.Count - 1].X; x += ms)
             {
                 double sum = 0.0;
-                while (scatterSeries1.Points[ind].X <= x)
+                while (scatters.Points[ind].X <= x)
                 {
-                    sum += scatterSeries1.Points[ind++].Y;
+                    sum += scatters.Points[ind++].Y;
                 }
-                lineSeries1.Points.Add(new DataPoint(x - (ms / 2.0), sum / ms));
+                lines.Points.Add(new DataPoint(x - (ms / 2.0), sum / ms));
             }
         }
 #endif
@@ -298,8 +292,12 @@ namespace MouseTester
             {
                 BlueComponent.lines.Smooth = false;
                 RedComponent.lines.Smooth = false;
-                GreenComponent.lines.Smooth = false;
-                YellowComponent.lines.Smooth = false;
+
+                if (dual)
+                {
+                    GreenComponent.lines.Smooth = false;
+                    YellowComponent.lines.Smooth = false;
+                }
             }
 
             GraphType type = comboBoxPlotType.SelectedItem as GraphType;
@@ -485,7 +483,7 @@ namespace MouseTester
         private void plot_frequency_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             xlabel = "Time (ms)";
-            ylabel = "Update Time (ms)";
+            ylabel = "Frequency (Hz)";
 
             for (int i = last_start; i <= last_end; i++)
             {
