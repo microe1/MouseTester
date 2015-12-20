@@ -27,6 +27,13 @@ namespace MouseTester
 
             public GraphFunction PlotFunc;
             private string Name;
+            private string axisX, axisY;
+
+            public string AxisX
+            {   get { return axisX; }  }
+            public string AxisY
+            {   get { return axisY; }  }
+
             private GT _DualGraph;
             public GT DualGraph 
             {
@@ -36,9 +43,11 @@ namespace MouseTester
                 }
             }
 
-            public GraphType(string Name, GT DualGraph, GraphFunction PlotFunc)
+            public GraphType(string Name, string axisX, string axisY, GT DualGraph, GraphFunction PlotFunc)
             {
                 this.Name = Name;
+                this.axisX = axisX;
+                this.axisY = axisY;
                 this._DualGraph = DualGraph;
                 this.PlotFunc = PlotFunc;
             }
@@ -162,8 +171,6 @@ namespace MouseTester
         double x_max;
         double y_min;
         double y_max;
-        private string xlabel = "";
-        private string ylabel = "";
 
         private bool dual = false;
         private bool init = true;
@@ -185,15 +192,15 @@ namespace MouseTester
 
             GraphType[] grapthtypes = 
             {
-                new GraphType("xCount vs. Time", GraphType.GT.normal, plot_xcounts_vs_time),
-                new GraphType("yCount vs. Time", GraphType.GT.normal, plot_ycounts_vs_time),
-                new GraphType("xyCount vs. Time", GraphType.GT.dual, plot_xycounts_vs_time),
-                new GraphType("Interval vs. Time", GraphType.GT.normal, plot_interval_vs_time),
-                new GraphType("Frequency vs. Time", GraphType.GT.normal, plot_frequency_vs_time),
-                new GraphType("xVelocity vs. Time", GraphType.GT.normal, plot_xvelocity_vs_time),
-                new GraphType("yVelocity vs. Time", GraphType.GT.normal, plot_yvelocity_vs_time),
-                new GraphType("xyVelocity vs. Time", GraphType.GT.dual, plot_xyvelocity_vs_time),
-                new GraphType("X vs. Y", GraphType.GT.nolines, plot_x_vs_y),
+                new GraphType("xCount vs. Time", "Time (ms)", "xCounts", GraphType.GT.normal, plot_xcounts_vs_time),
+                new GraphType("yCount vs. Time", "Time (ms)", "yCounts", GraphType.GT.normal, plot_ycounts_vs_time),
+                new GraphType("xyCount vs. Time", "Time (ms)", "Counts", GraphType.GT.dual, plot_xycounts_vs_time),
+                new GraphType("Interval vs. Time", "Time (ms)", "Update Time (ms)", GraphType.GT.normal, plot_interval_vs_time),
+                new GraphType("Frequency vs. Time", "Time (ms)", "Frequency (Hz)", GraphType.GT.normal, plot_frequency_vs_time),
+                new GraphType("xVelocity vs. Time", "Time (ms)", "xVelocity (m/s)", GraphType.GT.normal, plot_xvelocity_vs_time),
+                new GraphType("yVelocity vs. Time", "Time (ms)", "yVelocity (m/s)", GraphType.GT.normal, plot_yvelocity_vs_time),
+                new GraphType("xyVelocity vs. Time", "Time (ms)", "Velocity (m/s)", GraphType.GT.dual, plot_xyvelocity_vs_time),
+                new GraphType("X vs. Y", "xCounts", "yCounts", GraphType.GT.nolines, plot_x_vs_y),
             };
 
             foreach (GraphType type in grapthtypes)
@@ -343,7 +350,7 @@ namespace MouseTester
             linearAxis1.MinorGridlineColor = OxyColor.FromArgb(20, 0, 0, 139);
             linearAxis1.MinorGridlineStyle = LineStyle.Solid;
             linearAxis1.Position = AxisPosition.Bottom;
-            linearAxis1.Title = xlabel;
+            linearAxis1.Title = type.AxisX;
             pm.Axes.Add(linearAxis1);
 
             var linearAxis2 = new LinearAxis();
@@ -353,7 +360,7 @@ namespace MouseTester
             linearAxis2.MajorGridlineStyle = LineStyle.Solid;
             linearAxis2.MinorGridlineColor = OxyColor.FromArgb(20, 0, 0, 139);
             linearAxis2.MinorGridlineStyle = LineStyle.Solid;
-            linearAxis2.Title = ylabel;
+            linearAxis2.Title = type.AxisY;
             pm.Axes.Add(linearAxis2);
 
             plot1.RefreshPlot(true);
@@ -399,9 +406,6 @@ namespace MouseTester
 
         private void plot_xcounts_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "Time (ms)";
-            ylabel = "xCounts";
-            
             for (int i = last_start; i <= last_end; i++)
             {
                 if (events[i].hDevice != mlog.hDevice)
@@ -415,9 +419,6 @@ namespace MouseTester
         }
         private void plot_ycounts_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "Time (ms)";
-            ylabel = "yCounts";
-
             for (int i = last_start; i <= last_end; i++)
             {
                 if (events[i].hDevice != mlog.hDevice)
@@ -431,9 +432,6 @@ namespace MouseTester
         }
         private void plot_xycounts_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "Time (ms)";
-            ylabel = "Counts [x = Blue, y = Red]";
-
             for (int i = last_start; i <= last_end; i++)
             {
                 if (events[i].hDevice != mlog.hDevice)
@@ -458,9 +456,6 @@ namespace MouseTester
         }
         private void plot_interval_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "Time (ms)";
-            ylabel = "Update Time (ms)";
-
             for (int i = last_start; i <= last_end; i++)
             {
                 if (events[i].hDevice != mlog.hDevice)
@@ -482,9 +477,6 @@ namespace MouseTester
         }
         private void plot_frequency_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "Time (ms)";
-            ylabel = "Frequency (Hz)";
-
             for (int i = last_start; i <= last_end; i++)
             {
                 if (events[i].hDevice != mlog.hDevice)
@@ -506,9 +498,6 @@ namespace MouseTester
         }
         private void plot_xvelocity_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "Time (ms)";
-            ylabel = "xVelocity (m/s)";
-
             if (mlog.Cpi > 0)
             {
                 for (int i = last_start; i <= last_end; i++)
@@ -537,9 +526,6 @@ namespace MouseTester
         }
         private void plot_yvelocity_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "Time (ms)";
-            ylabel = "yVelocity (m/s)";
-
             if (mlog.Cpi > 0)
             {
                 for (int i = last_start; i <= last_end; i++)
@@ -568,9 +554,6 @@ namespace MouseTester
         }
         private void plot_xyvelocity_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "Time (ms)";
-            ylabel = "Velocity (m/s) [x = Blue, y = Red]";
-
             if (mlog.Cpi > 0)
             {
                 for (int i = last_start; i <= last_end; i++)
@@ -618,9 +601,6 @@ namespace MouseTester
         }
         private void plot_x_vs_y(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
-            xlabel = "xCounts";
-            ylabel = "yCounts";
-
             double x = 0.0;
             double y = 0.0;
             for (int i = last_start; i <= last_end; i++)
