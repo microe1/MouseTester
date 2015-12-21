@@ -173,7 +173,6 @@ namespace MouseTester
         double y_max;
 
         private bool dual = false;
-        private bool init = true;
 
         public MousePlot(MouseLog Mlog, MouseLog Mlog2)
         {
@@ -220,7 +219,9 @@ namespace MouseTester
             this.numericUpDownEnd.Value = last_end;
             this.numericUpDownEnd.ValueChanged += new System.EventHandler(this.numericUpDownEnd_ValueChanged);
 
-            init = false;
+            this.checkBoxLines.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
+            this.checkBoxStem.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
+            this.comboBoxPlotType.SelectedIndexChanged += new System.EventHandler(this.Refresh_Plot_Helper);
             refresh_plot();
         }
 
@@ -387,21 +388,14 @@ namespace MouseTester
         private void update_minmax(double x, double y)
         {
             if (x < x_min)
-            {
                 x_min = x;
-            }
             if (x > x_max)
-            {
                 x_max = x;
-            }
+
             if (y < y_min)
-            {
                 y_min = y;
-            }
             if (y > y_max)
-            {
                 y_max = y;
-            }
         }
 
         private void plot_xcounts_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
@@ -639,9 +633,6 @@ namespace MouseTester
 
         private void Refresh_Plot_Helper(object sender, EventArgs e)
         {
-            if (init)
-                return;
-
             refresh_plot();
         }
 
@@ -667,9 +658,7 @@ namespace MouseTester
                 using (Graphics g = Graphics.FromImage(bm))
                 {
                     if (background != null)
-                    {
                         g.FillRectangle(background, 0, 0, width, height);
-                    }
 
                     var rc = new GraphicsRenderContext { RendersToScreen = false };
                     rc.SetGraphicsTarget(g);
@@ -682,9 +671,6 @@ namespace MouseTester
 
         private void numericUpDownDelay_ValueChanged(object sender, EventArgs e)
         {
-            if (init)
-                return;
-
             plot1.Model.Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" + " & " + numericUpDownDelay.Value.ToString("+#.#;-#.#;0", CultureInfo.InvariantCulture) + " ms delay" : "");
 
             refresh_plot();

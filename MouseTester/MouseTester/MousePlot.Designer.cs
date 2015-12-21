@@ -162,7 +162,6 @@
             this.checkBoxLines.TabIndex = 9;
             this.checkBoxLines.Text = "Lines";
             this.checkBoxLines.UseVisualStyleBackColor = true;
-            this.checkBoxLines.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
             // 
             // checkBoxStem
             // 
@@ -173,7 +172,6 @@
             this.checkBoxStem.TabIndex = 8;
             this.checkBoxStem.Text = "Stem";
             this.checkBoxStem.UseVisualStyleBackColor = true;
-            this.checkBoxStem.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
             // 
             // buttonSavePNG
             // 
@@ -246,7 +244,6 @@
             this.comboBoxPlotType.Name = "comboBoxPlotType";
             this.comboBoxPlotType.Size = new System.Drawing.Size(118, 21);
             this.comboBoxPlotType.TabIndex = 1;
-            this.comboBoxPlotType.SelectedIndexChanged += new System.EventHandler(this.Refresh_Plot_Helper);
             // 
             // MousePlot
             // 
