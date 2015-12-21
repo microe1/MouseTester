@@ -9,6 +9,9 @@ namespace MouseTester
     {
         private RawMouse mouse = new RawMouse();
 
+        private Settings settings;
+        private IniFile configini;
+
         enum state { idle, measure_wait, measure, collect_wait, collect, log };
         private state test_state = state.idle;
 
@@ -56,6 +59,9 @@ namespace MouseTester
                                  "\r\n        or\r\n" +
                                  "Press the Load button";
             this.toolStripStatusLabel1.Text = "";
+
+            configini = new IniFile("config.ini");
+            settings = Settings.Read(configini);
         }
 
         protected override void WndProc(ref Message m)
@@ -237,7 +243,7 @@ namespace MouseTester
                 this.mlog1.Desc = textBoxDesc1.Text;
                 this.mlog2.Desc = textBoxDesc2.Text;
 
-                MousePlot mousePlot = new MousePlot(this.mlog1, dual_state == dualstate.ready ? this.mlog2 : null);
+                MousePlot mousePlot = new MousePlot(this.mlog1, dual_state == dualstate.ready ? this.mlog2 : null, settings);
                 mousePlot.Show();
             }
         }
@@ -298,6 +304,11 @@ namespace MouseTester
             // only allow one decimal point
             //if (e.KeyChar == '.' && (sender as TextBox).Text.IndexOf('.') > -1)
             //e.Handled = true;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            settings.Write(configini);
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)

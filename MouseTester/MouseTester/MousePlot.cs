@@ -172,11 +172,15 @@ namespace MouseTester
         double y_min;
         double y_max;
 
+        private Settings settings;
+
         private bool dual = false;
 
-        public MousePlot(MouseLog Mlog, MouseLog Mlog2)
+        public MousePlot(MouseLog Mlog, MouseLog Mlog2, Settings settings)
         {
             InitializeComponent();
+
+            this.settings = settings;
 
             this.mlog = Mlog;
             this.mlog2 = Mlog2;
@@ -218,6 +222,17 @@ namespace MouseTester
             this.numericUpDownEnd.Maximum = last_end;
             this.numericUpDownEnd.Value = last_end;
             this.numericUpDownEnd.ValueChanged += new System.EventHandler(this.numericUpDownEnd_ValueChanged);
+
+            checkBoxLines.Checked = settings.lines;
+            checkBoxBgnd.Checked = settings.transparent;
+            checkBoxSize.Checked = settings.fixedsize;
+            checkBoxStem.Checked = settings.stem;
+
+            if (settings.maximized)
+                this.WindowState = FormWindowState.Maximized;
+
+            if (settings.plotindex >= 0 && settings.plotindex < comboBoxPlotType.Items.Count)
+                comboBoxPlotType.SelectedIndex = settings.plotindex;
 
             this.checkBoxLines.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
             this.checkBoxStem.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
@@ -629,6 +644,24 @@ namespace MouseTester
                 last_end = (int)numericUpDownEnd.Value;
                 refresh_plot();
             }
+        }
+
+        private void MousePlot_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            settings.lines = checkBoxLines.Checked;
+            settings.transparent = checkBoxBgnd.Checked;
+            settings.fixedsize = checkBoxSize.Checked;
+            settings.stem = checkBoxStem.Checked;
+
+            settings.plotindex = comboBoxPlotType.SelectedIndex;
+        }
+
+        private void MousePlot_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+                settings.maximized = false;
+            else if (this.WindowState == FormWindowState.Maximized)
+                settings.maximized = true;
         }
 
         private void Refresh_Plot_Helper(object sender, EventArgs e)

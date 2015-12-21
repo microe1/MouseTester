@@ -85,6 +85,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GraphicsRenderContext.cs" />
+    <Compile Include="IniFile.cs" />
     <Compile Include="MouseEvent.cs" />
     <Compile Include="MouseLog.cs" />
     <Compile Include="MousePlot.cs">
@@ -96,6 +97,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawMouse.cs" />
+    <Compile Include="Settings.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
