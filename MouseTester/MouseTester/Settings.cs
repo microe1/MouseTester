@@ -31,6 +31,16 @@ namespace MouseTester
         {
             return !(s1 == s2);
         }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
         private static bool ToBoolean(string arg, bool defvalue = false)
         {
             int n;
