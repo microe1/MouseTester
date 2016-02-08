@@ -253,6 +253,7 @@
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(808, 627);
             this.Name = "MousePlot";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "MousePlot";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MousePlot_FormClosing);
             this.Resize += new System.EventHandler(this.MousePlot_Resize);

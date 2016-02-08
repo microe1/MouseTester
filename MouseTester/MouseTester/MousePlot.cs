@@ -233,6 +233,22 @@ namespace MouseTester
 
             if (settings.maximized)
                 this.WindowState = FormWindowState.Maximized;
+            else
+            {
+                Rectangle wa = Screen.PrimaryScreen.WorkingArea;
+
+                if (settings.xpos + Size.Width > wa.Right)
+                    settings.xpos = wa.Right - Size.Width;
+                if (settings.ypos + Size.Height > wa.Bottom)
+                    settings.ypos = wa.Bottom - Size.Height;
+
+                if (settings.xpos < 0)
+                    settings.xpos = 0;
+                if (settings.ypos < 0)
+                    settings.ypos = 0;
+
+                this.Location = new Point(settings.xpos, settings.ypos);
+            }
 
             if (settings.plotindex >= 0 && settings.plotindex < comboBoxPlotType.Items.Count)
                 comboBoxPlotType.SelectedIndex = settings.plotindex;
@@ -691,6 +707,9 @@ namespace MouseTester
             settings.stem = checkBoxStem.Checked;
 
             settings.plotindex = comboBoxPlotType.SelectedIndex;
+
+            settings.xpos = Location.X;
+            settings.ypos = Location.Y;
         }
 
         private void MousePlot_Resize(object sender, EventArgs e)

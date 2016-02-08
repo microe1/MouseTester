@@ -16,6 +16,8 @@ namespace MouseTester
 
         public int plotindex;
 
+        public int xpos, ypos;
+
         public static bool operator==(Settings s1, Settings s2)
         {
             return
@@ -24,7 +26,9 @@ namespace MouseTester
                 s1.transparent == s2.transparent &&
                 s1.fixedsize == s2.fixedsize &&
                 s1.maximized == s2.maximized &&
-                s1.plotindex == s2.plotindex;
+                s1.plotindex == s2.plotindex &&
+                s1.xpos == s2.xpos &&
+                s1.ypos == s2.ypos;
         }
 
         public static bool operator!=(Settings s1, Settings s2)
@@ -67,6 +71,9 @@ namespace MouseTester
             result.plotindex = -1;
             int.TryParse(ini.Read("Plot", "Config"), out result.plotindex);
 
+            int.TryParse(ini.Read("XPos", "Config"), out result.xpos);
+            int.TryParse(ini.Read("YPos", "Config"), out result.ypos);
+
             return result;
         }
 
@@ -80,6 +87,9 @@ namespace MouseTester
             ini.Write("Maximized", maximized ? "true" : "false", "Config");
 
             ini.Write("Plot", plotindex.ToString(), "Config");
+
+            ini.Write("XPos", xpos.ToString(), "Config");
+            ini.Write("YPos", ypos.ToString(), "Config");
         }
     }
 }
