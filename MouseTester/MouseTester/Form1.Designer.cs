@@ -93,6 +93,7 @@
             this.textBoxDesc1.Name = "textBoxDesc1";
             this.textBoxDesc1.Size = new System.Drawing.Size(227, 20);
             this.textBoxDesc1.TabIndex = 0;
+            this.textBoxDesc1.TextChanged += new System.EventHandler(this.textBoxDesc1_TextChanged);
             // 
             // textBoxCPI1
             // 
@@ -100,6 +101,7 @@
             this.textBoxCPI1.Name = "textBoxCPI1";
             this.textBoxCPI1.Size = new System.Drawing.Size(100, 20);
             this.textBoxCPI1.TabIndex = 0;
+            this.textBoxCPI1.TextChanged += new System.EventHandler(this.textBoxCPI1_TextChanged);
             this.textBoxCPI1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Numtextbox_KeyPress);
             this.textBoxCPI1.Validated += new System.EventHandler(this.textBoxCPI_Validated);
             // 
@@ -316,6 +318,7 @@
             this.textBoxDesc2.Name = "textBoxDesc2";
             this.textBoxDesc2.Size = new System.Drawing.Size(227, 20);
             this.textBoxDesc2.TabIndex = 0;
+            this.textBoxDesc2.TextChanged += new System.EventHandler(this.textBoxDesc1_TextChanged);
             // 
             // groupBox6
             // 
@@ -356,6 +359,7 @@
             this.textBoxCPI2.Name = "textBoxCPI2";
             this.textBoxCPI2.Size = new System.Drawing.Size(100, 20);
             this.textBoxCPI2.TabIndex = 0;
+            this.textBoxCPI2.TextChanged += new System.EventHandler(this.textBoxCPI1_TextChanged);
             this.textBoxCPI2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Numtextbox_KeyPress);
             this.textBoxCPI2.Validated += new System.EventHandler(this.textBoxCPI_Validated);
             // 

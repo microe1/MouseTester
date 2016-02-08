@@ -307,7 +307,6 @@ namespace MouseTester
 
         private void textBoxCPI_Validated(object sender, EventArgs e)
         {
-            this.mlog.Cpi = Convert.ToDouble(textBoxCPI.Text);
             this.textBox1.Text = "Press the Collect or Log Start button\r\n";
         }
 
@@ -335,6 +334,16 @@ namespace MouseTester
         {
             if (e.KeyData == Keys.F2)
                 buttonLog_Click(sender, e);
+        }
+
+        private void textBoxCPI1_TextChanged(object sender, EventArgs e)
+        {
+            this.mlog.Cpi = Convert.ToDouble(textBoxCPI.Text);
+        }
+
+        private void textBoxDesc1_TextChanged(object sender, EventArgs e)
+        {
+            this.mlog.Desc = textBoxDesc.Text;
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
