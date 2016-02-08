@@ -188,7 +188,7 @@
             this.groupBox4.Controls.Add(this.buttonPlot);
             this.groupBox4.Location = new System.Drawing.Point(12, 280);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(260, 50);
+            this.groupBox4.Size = new System.Drawing.Size(256, 50);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "MouseData";
@@ -226,9 +226,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 439);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 435);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(284, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(280, 22);
             this.statusStrip1.TabIndex = 5;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -412,8 +412,10 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.textBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(300, 500);
-            this.MinimumSize = new System.Drawing.Size(300, 400);
+            this.MinimumSize = new System.Drawing.Size(300, 500);
             this.Name = "Form1";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "MouseTester v1.4";
