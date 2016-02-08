@@ -209,7 +209,7 @@ namespace MouseTester
                 this.mlog2.Clear();
                 this.mouse.StopWatchReset();
                 this.test_state = state.log;
-                buttonLog.Text = "Log Stop";
+                buttonLog.Text = "Log Stop (F2)";
             }
             else if (this.test_state == state.log)
             {
@@ -235,7 +235,7 @@ namespace MouseTester
                                      "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
                 this.toolStripStatusLabel1.Text = "";
                 this.test_state = state.idle;
-                buttonLog.Text = "Log Start";
+                buttonLog.Text = "Log Start (F2)";
             }
         }
 
