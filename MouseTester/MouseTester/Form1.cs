@@ -205,18 +205,27 @@ namespace MouseTester
             {
                 this.textBox1.Text = "1. Press the Log Stop button\r\n";
                 this.toolStripStatusLabel1.Text = "Logging...";
-                this.mlog.Clear();
+                this.mlog1.Clear();
+                this.mlog2.Clear();
                 this.mouse.StopWatchReset();
                 this.test_state = state.log;
                 buttonLog.Text = "Log Stop";
             }
             else if (this.test_state == state.log)
             {
-                double ts_min = this.mlog.Events[1].ts;
-                foreach (MouseEvent me in this.mlog.Events)
-                {
+                double ts_min = 0.0;
+
+                if (mlog1.Events.Count > 0)
+                    ts_min = mlog1.Events[0].ts;
+
+                if (dual_state == dualstate.ready && mlog2.Events.Count > 0 && mlog2.Events[0].ts < ts_min)
+                    ts_min = mlog2.Events[0].ts;
+
+                foreach (MouseEvent me in this.mlog1.Events)
                     me.ts -= ts_min;
-                }
+                foreach (MouseEvent me in this.mlog2.Events)
+                    me.ts -= ts_min;
+
                 this.textBox1.Text = "Press the plot button to view data\r\n" +
                                      "        or\r\n" +
                                      "Press the save button to save log file\r\n" +
@@ -309,6 +318,12 @@ namespace MouseTester
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             settings.Write(configini);
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.F2)
+                buttonLog_Click(sender, e);
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
