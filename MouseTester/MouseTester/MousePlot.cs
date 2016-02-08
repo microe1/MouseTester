@@ -423,8 +423,8 @@ namespace MouseTester
                 if (events[i].hDevice != mlog.hDevice)
                     continue;
 
-                double x =events[i].ts + delay;
-                double y =events[i].lastx;
+                double x = events[i].ts + delay;
+                double y = events[i].lastx;
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
@@ -436,8 +436,8 @@ namespace MouseTester
                 if (events[i].hDevice != mlog.hDevice)
                     continue;
 
-                double x =events[i].ts + delay;
-                double y =events[i].lasty;
+                double x = events[i].ts + delay;
+                double y = events[i].lasty;
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
@@ -449,8 +449,8 @@ namespace MouseTester
                 if (events[i].hDevice != mlog.hDevice)
                     continue;
 
-                double x =events[i].ts + delay;
-                double y =events[i].lastx;
+                double x = events[i].ts + delay;
+                double y = events[i].lastx;
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
@@ -460,8 +460,8 @@ namespace MouseTester
                 if (events[i].hDevice != mlog.hDevice)
                     continue;
 
-                double x =events[i].ts + delay;
-                double y =events[i].lasty;
+                double x = events[i].ts + delay;
+                double y = events[i].lasty;
                 update_minmax(x, y);
                 sec_comp.Add(x, y);
             }
@@ -473,16 +473,13 @@ namespace MouseTester
                 if (events[i].hDevice != mlog.hDevice)
                     continue;
 
-                double x =events[i].ts;
+                double x = events[i].ts;
                 double y;
                 if (i == 0)
-                {
                     y = 0.0;
-                }
                 else
-                {
-                    y =events[i].ts - events[i].lastts;
-                }
+                    y = events[i].ts - events[i].lastts;
+
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
@@ -497,13 +494,10 @@ namespace MouseTester
                 double x = events[i].ts;
                 double y;
                 if (i == 0)
-                {
                     y = 0.0;
-                }
                 else
-                {
                     y = 1000.0 / (events[i].ts - events[i].lastts);
-                }
+
                 update_minmax(x, y);
                 main_comp.Add(x, y);
             }
@@ -520,21 +514,16 @@ namespace MouseTester
                     double x = events[i].ts + delay;
                     double y;
                     if (i == 0)
-                    {
                         y = 0.0;
-                    }
                     else
-                    {
                         y = (events[i].lastx) / (events[i].ts - events[i].lastts) / mlog.Cpi * 25.4;
-                    }
+
                     update_minmax(x, y);
                     main_comp.Add(x, y);
                 }
             }
             else
-            {
                 MessageBox.Show("CPI value is invalid, please run Measure");
-            }
         }
         private void plot_yvelocity_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
@@ -548,21 +537,16 @@ namespace MouseTester
                     double x =events[i].ts + delay;
                     double y;
                     if (i == 0)
-                    {
                         y = 0.0;
-                    }
                     else
-                    {
                         y = (events[i].lasty) / (events[i].ts - events[i].lastts) / mlog.Cpi * 25.4;
-                    }
+
                     update_minmax(x, y);
                     main_comp.Add(x, y);
                 }
             }
             else
-            {
                 MessageBox.Show("CPI value is invalid, please run Measure");
-            }
         }
         private void plot_xyvelocity_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
@@ -576,13 +560,10 @@ namespace MouseTester
                     double x =events[i].ts + delay;
                     double y;
                     if (i == 0)
-                    {
                         y = 0.0;
-                    }
                     else
-                    {
                         y = (events[i].lastx) / (events[i].ts - events[i].lastts) / mlog.Cpi * 25.4;
-                    }
+
                     update_minmax(x, y);
                     main_comp.Add(x, y);
                 }
@@ -595,21 +576,16 @@ namespace MouseTester
                     double x =events[i].ts + delay;
                     double y;
                     if (i == 0)
-                    {
                         y = 0.0;
-                    }
                     else
-                    {
                         y = (events[i].lasty) / (events[i].ts - events[i].lastts) / mlog.Cpi * 25.4;
-                    }
+
                     update_minmax(x, y);
                     sec_comp.Add(x, y);
                 }
             }
             else
-            {
                 MessageBox.Show("CPI value is invalid, please run Measure");
-            }
         }
         private void plot_xsum_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
@@ -669,8 +645,6 @@ namespace MouseTester
                 sec_comp.Add(x, y);
             }
         }
-
-
         private void plot_x_vs_y(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             double x = 0.0;
