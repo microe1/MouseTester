@@ -203,6 +203,9 @@ namespace MouseTester
                 new GraphType("xVelocity vs. Time", "Time (ms)", "xVelocity (m/s)", GraphType.GT.normal, plot_xvelocity_vs_time),
                 new GraphType("yVelocity vs. Time", "Time (ms)", "yVelocity (m/s)", GraphType.GT.normal, plot_yvelocity_vs_time),
                 new GraphType("xyVelocity vs. Time", "Time (ms)", "Velocity (m/s)", GraphType.GT.dual, plot_xyvelocity_vs_time),
+                new GraphType("xSum vs. Time", "Time (ms)", "xSum (m/s)", GraphType.GT.normal, plot_xsum_vs_time),
+                new GraphType("ySum vs. Time", "Time (ms)", "ySum (m/s)", GraphType.GT.normal, plot_ysum_vs_time),
+                new GraphType("xySum vs. Time", "Time (ms)", "Sum (m/s)", GraphType.GT.dual, plot_xysum_vs_time),
                 new GraphType("X vs. Y", "xCounts", "yCounts", GraphType.GT.nolines, plot_x_vs_y),
             };
 
@@ -608,6 +611,66 @@ namespace MouseTester
                 MessageBox.Show("CPI value is invalid, please run Measure");
             }
         }
+        private void plot_xsum_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
+        {
+            double y = 0;
+
+            for (int i = last_start; i <= last_end; i++)
+            {
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x = events[i].ts + delay;
+                y += events[i].lastx;
+                update_minmax(x, y);
+                main_comp.Add(x, y);
+            }
+        }
+        private void plot_ysum_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
+        {
+            double y = 0;
+
+            for (int i = last_start; i <= last_end; i++)
+            {
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x = events[i].ts + delay;
+                y += events[i].lasty;
+                update_minmax(x, y);
+                main_comp.Add(x, y);
+            }
+        }
+        private void plot_xysum_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
+        {
+            double y = 0;
+
+            for (int i = last_start; i <= last_end; i++)
+            {
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x = events[i].ts + delay;
+                y += events[i].lastx;
+                update_minmax(x, y);
+                main_comp.Add(x, y);
+            }
+
+            y = 0;
+
+            for (int i = last_start; i <= last_end; i++)
+            {
+                if (events[i].hDevice != mlog.hDevice)
+                    continue;
+
+                double x = events[i].ts + delay;
+                y += events[i].lasty;
+                update_minmax(x, y);
+                sec_comp.Add(x, y);
+            }
+        }
+
+
         private void plot_x_vs_y(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             double x = 0.0;
