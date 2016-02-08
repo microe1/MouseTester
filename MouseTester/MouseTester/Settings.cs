@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,35 +17,14 @@ namespace MouseTester
 
         public int plotindex;
 
-        public int xpos, ypos;
+        public int xpos;
+        public int ypos;
 
-        public static bool operator==(Settings s1, Settings s2)
-        {
-            return
-                s1.lines == s2.lines &&
-                s1.stem == s2.stem &&
-                s1.transparent == s2.transparent &&
-                s1.fixedsize == s2.fixedsize &&
-                s1.maximized == s2.maximized &&
-                s1.plotindex == s2.plotindex &&
-                s1.xpos == s2.xpos &&
-                s1.ypos == s2.ypos;
-        }
+        public double cpi1 = 400.0;
+        public double cpi2 = 400.0;
+        public string desc1;
+        public string desc2;
 
-        public static bool operator!=(Settings s1, Settings s2)
-        {
-            return !(s1 == s2);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
         private static bool ToBoolean(string arg, bool defvalue = false)
         {
             int n;
@@ -74,6 +54,17 @@ namespace MouseTester
             int.TryParse(ini.Read("XPos", "Config"), out result.xpos);
             int.TryParse(ini.Read("YPos", "Config"), out result.ypos);
 
+            bool res1 = double.TryParse(ini.Read("CPI1", "Config"), NumberStyles.Float, CultureInfo.InvariantCulture, out result.cpi1);
+            double.TryParse(ini.Read("CPI2", "Config"), NumberStyles.Float, CultureInfo.InvariantCulture, out result.cpi2);
+
+            result.desc1 = ini.Read("Desc1", "Config");
+            result.desc2 = ini.Read("Desc2", "Config");
+
+            if (result.desc1 == "")
+                result.desc1 = "MouseTester";
+            if (result.desc2 == "")
+                result.desc2 = "MouseTester";
+
             return result;
         }
 
@@ -90,6 +81,12 @@ namespace MouseTester
 
             ini.Write("XPos", xpos.ToString(), "Config");
             ini.Write("YPos", ypos.ToString(), "Config");
+
+            ini.Write("CPI1", cpi1.ToString(CultureInfo.InvariantCulture), "Config");
+            ini.Write("CPI2", cpi2.ToString(CultureInfo.InvariantCulture), "Config");
+
+            ini.Write("Desc1", desc1, "Config");
+            ini.Write("Desc2", desc2, "Config");
         }
     }
 }

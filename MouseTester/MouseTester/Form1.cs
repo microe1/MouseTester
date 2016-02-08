@@ -48,11 +48,6 @@ namespace MouseTester
             this.mouse.RegisterRawInputMouse(Handle);
             this.mouse.mevent += new RawMouse.MouseEventHandler(this.logMouseEvent);
 
-            this.textBoxDesc1.Text = this.mlog1.Desc.ToString();
-            this.textBoxCPI1.Text = this.mlog1.Cpi.ToString();
-            this.textBoxDesc2.Text = this.mlog2.Desc.ToString();
-            this.textBoxCPI2.Text = this.mlog2.Cpi.ToString();
-
             this.textBox1.Text = "Enter the correct CPI" +
                                  "\r\n        or\r\n" +
                                  "Press the Measure button" +
@@ -62,6 +57,17 @@ namespace MouseTester
 
             configini = new IniFile("config.ini");
             settings = Settings.Read(configini);
+
+            this.mlog1.Cpi = settings.cpi1;
+            this.mlog2.Cpi = settings.cpi2;
+            this.mlog1.Desc = settings.desc1;
+            this.mlog2.Desc = settings.desc2;
+
+            this.textBoxDesc1.Text = this.mlog1.Desc.ToString();
+            this.textBoxCPI1.Text = this.mlog1.Cpi.ToString();
+            this.textBoxDesc2.Text = this.mlog2.Desc.ToString();
+            this.textBoxCPI2.Text = this.mlog2.Cpi.ToString();
+
         }
 
         protected override void WndProc(ref Message m)
@@ -317,6 +323,11 @@ namespace MouseTester
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            settings.cpi1 = mlog1.Cpi;
+            settings.cpi2 = mlog2.Cpi;
+            settings.desc1 = mlog1.Desc;
+            settings.desc2 = mlog2.Desc;
+
             settings.Write(configini);
         }
 
