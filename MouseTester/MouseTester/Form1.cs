@@ -338,7 +338,8 @@ namespace MouseTester
 
         private void textBoxCPI1_TextChanged(object sender, EventArgs e)
         {
-            this.mlog.Cpi = Convert.ToDouble(textBoxCPI.Text);
+            string text = textBoxCPI.Text == "" ? "0" : textBoxCPI.Text;
+            this.mlog.Cpi = Convert.ToDouble(text);
         }
 
         private void textBoxDesc1_TextChanged(object sender, EventArgs e)
