@@ -247,7 +247,7 @@ namespace MouseTester
 
         private void buttonPlot_Click(object sender, EventArgs e)
         {
-            if (this.mlog1.Cpi == 0.0 || this.mlog2.Cpi == 0.0)
+            if (this.mlog1.Cpi == 0.0 || (this.mlog2.Cpi == 0.0 && dual_state == dualstate.ready))
             {
                 MessageBox.Show("CPI value is invalid, please run Measure");
                 return;
