@@ -178,9 +178,9 @@ namespace MouseTester
 
         public MousePlot(MouseLog Mlog, MouseLog Mlog2, Settings settings)
         {
-            InitializeComponent();
-
             this.settings = settings;
+
+            InitializeComponent();
 
             this.mlog = Mlog;
             this.mlog2 = Mlog2;
