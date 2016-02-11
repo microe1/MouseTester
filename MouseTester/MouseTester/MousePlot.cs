@@ -13,8 +13,8 @@ namespace MouseTester
 {
     public partial class MousePlot : Form
     {
+        private Settings settings;
         private GraphComponents BlueComponent, RedComponent, GreenComponent, YellowComponent;
-
         private MouseLog mlog, mlog2;
         private List<MouseEvent> events = new List<MouseEvent>();
         private int last_start;
@@ -23,11 +23,9 @@ namespace MouseTester
         double x_max;
         double y_min;
         double y_max;
-
-        private Settings settings;
-
         private bool dual = false;
 
+        #region LOADING
         public MousePlot(MouseLog Mlog, MouseLog Mlog2, Settings settings)
         {
             this.settings = settings;
@@ -174,6 +172,9 @@ namespace MouseTester
             };
             plot1.Model = pm;
         }
+        #endregion
+
+        #region REFRESH
         private void refresh_plot()
         {
             PlotModel pm = plot1.Model;
@@ -284,6 +285,78 @@ namespace MouseTester
                 y_max = y;
         }
 
+        private void Refresh_Plot_Helper(object sender, EventArgs e)
+        {
+            refresh_plot();
+        }
+        #endregion
+
+        #region UI CALLBACKS
+        private void numericUpDownStart_ValueChanged(object sender, EventArgs e)
+        {
+            if (numericUpDownStart.Value >= numericUpDownEnd.Value)
+                numericUpDownStart.Value = last_start;
+            else
+            {
+                last_start = (int)numericUpDownStart.Value;
+                refresh_plot();
+            }
+        }
+        private void numericUpDownEnd_ValueChanged(object sender, EventArgs e)
+        {
+            if (numericUpDownEnd.Value <= numericUpDownStart.Value)
+                numericUpDownEnd.Value = last_end;
+            else
+            {
+                last_end = (int)numericUpDownEnd.Value;
+                refresh_plot();
+            }
+        }
+        private void numericUpDownDelay_ValueChanged(object sender, EventArgs e)
+        {
+            plot1.Model.Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" + " & " + numericUpDownDelay.Value.ToString("+#.#;-#.#;0", CultureInfo.InvariantCulture) + " ms delay" : "");
+
+            refresh_plot();
+        }
+
+        private void MousePlot_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+                settings.maximized = false;
+            else if (this.WindowState == FormWindowState.Maximized)
+                settings.maximized = true;
+        }
+
+        private void MousePlot_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            settings.lines = checkBoxLines.Checked;
+            settings.transparent = checkBoxBgnd.Checked;
+            settings.fixedsize = checkBoxSize.Checked;
+            settings.stem = checkBoxStem.Checked;
+
+            settings.plotindex = comboBoxPlotType.SelectedIndex;
+
+            settings.xpos = Location.X;
+            settings.ypos = Location.Y;
+        }
+
+        private void buttonSavePNG_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "PNG Files (*.png)|*.png";
+            saveFileDialog1.FilterIndex = 1;
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                int width = checkBoxSize.Checked ? 800 : (int)this.plot1.Model.Width;
+                int height = checkBoxSize.Checked ? 600 : (int)this.plot1.Model.Height;
+                Brush backgnd = checkBoxBgnd.Checked ? null : new SolidBrush(Color.White);
+
+                MousePlot.Export(this.plot1.Model, saveFileDialog1.FileName, width, height, backgnd);
+            }
+        }
+        #endregion
+
+        #region PLOT FUNCTIONS
         private void plot_xcounts_vs_time(MouseLog mlog, double delay, GraphComponents main_comp, GraphComponents sec_comp)
         {
             for (int i = last_start; i <= last_end; i++)
@@ -402,7 +475,7 @@ namespace MouseTester
                     if (events[i].hDevice != mlog.hDevice)
                         continue;
 
-                    double x =events[i].ts + delay;
+                    double x = events[i].ts + delay;
                     double y;
                     if (i == 0)
                         y = 0.0;
@@ -425,7 +498,7 @@ namespace MouseTester
                     if (events[i].hDevice != mlog.hDevice)
                         continue;
 
-                    double x =events[i].ts + delay;
+                    double x = events[i].ts + delay;
                     double y;
                     if (i == 0)
                         y = 0.0;
@@ -441,7 +514,7 @@ namespace MouseTester
                     if (events[i].hDevice != mlog.hDevice)
                         continue;
 
-                    double x =events[i].ts + delay;
+                    double x = events[i].ts + delay;
                     double y;
                     if (i == 0)
                         y = 0.0;
@@ -522,75 +595,14 @@ namespace MouseTester
                 if (events[i].hDevice != mlog.hDevice)
                     continue;
 
-                x +=events[i].lastx;
-                y +=events[i].lasty;
+                x += events[i].lastx;
+                y += events[i].lasty;
                 update_minmax(x, x);
                 update_minmax(y, y);
                 main_comp.Add(x, y, false);
             }
         }
-
-        private void numericUpDownStart_ValueChanged(object sender, EventArgs e)
-        {
-            if (numericUpDownStart.Value >= numericUpDownEnd.Value)
-                numericUpDownStart.Value = last_start;
-            else
-            {
-                last_start = (int)numericUpDownStart.Value;
-                refresh_plot();
-            }
-        }
-        private void numericUpDownEnd_ValueChanged(object sender, EventArgs e)
-        {
-            if (numericUpDownEnd.Value <= numericUpDownStart.Value)
-                numericUpDownEnd.Value = last_end;
-            else
-            {
-                last_end = (int)numericUpDownEnd.Value;
-                refresh_plot();
-            }
-        }
-
-        private void MousePlot_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            settings.lines = checkBoxLines.Checked;
-            settings.transparent = checkBoxBgnd.Checked;
-            settings.fixedsize = checkBoxSize.Checked;
-            settings.stem = checkBoxStem.Checked;
-
-            settings.plotindex = comboBoxPlotType.SelectedIndex;
-
-            settings.xpos = Location.X;
-            settings.ypos = Location.Y;
-        }
-
-        private void MousePlot_Resize(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Normal)
-                settings.maximized = false;
-            else if (this.WindowState == FormWindowState.Maximized)
-                settings.maximized = true;
-        }
-
-        private void Refresh_Plot_Helper(object sender, EventArgs e)
-        {
-            refresh_plot();
-        }
-
-        private void buttonSavePNG_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "PNG Files (*.png)|*.png";
-            saveFileDialog1.FilterIndex = 1;
-            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                int width = checkBoxSize.Checked ? 800 : (int)this.plot1.Model.Width;
-                int height = checkBoxSize.Checked ? 600 : (int)this.plot1.Model.Height;
-                Brush backgnd = checkBoxBgnd.Checked ? null : new SolidBrush(Color.White);
-
-                MousePlot.Export(this.plot1.Model, saveFileDialog1.FileName, width, height, backgnd);
-            }         
-        }
+        #endregion
 
         public static void Export(PlotModel model, string fileName, int width, int height, Brush background = null)
         {
@@ -610,11 +622,6 @@ namespace MouseTester
             }
         }
 
-        private void numericUpDownDelay_ValueChanged(object sender, EventArgs e)
-        {
-            plot1.Model.Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" + " & " + numericUpDownDelay.Value.ToString("+#.#;-#.#;0", CultureInfo.InvariantCulture) + " ms delay" : "");
 
-            refresh_plot();
-        }
     }
 }

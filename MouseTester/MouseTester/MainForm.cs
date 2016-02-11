@@ -25,6 +25,7 @@ namespace MouseTester
 
         private IntPtr last_released_leftclick = IntPtr.Zero;
 
+        #region LOADING
         public MainForm()
         {
             InitializeComponent();
@@ -69,7 +70,9 @@ namespace MouseTester
             this.textBoxCPI2.Text = this.mlog2.Cpi.ToString();
 
         }
+        #endregion
 
+        #region RAW MOUSE INPUT HANDLING
         protected override void WndProc(ref Message m)
         {
             this.mouse.ProcessRawInput(m);
@@ -177,31 +180,52 @@ namespace MouseTester
             }
         }
 
-        private void buttonMeasure_Click(object sender, EventArgs e)
+        private void buttonEnableDual_MouseClick(object sender, MouseEventArgs e)
         {
-            if (this.test_state == state.idle) {
-                this.textBox1.Text = "1. Press and hold the left mouse button\r\n" +
-                                     "2. Move the mouse 10 cm in a straight line\r\n" +
-                                     "3. Release the left mouse button\r\n";
-                this.toolStripStatusLabel1.Text = "Press the left mouse button";
-                this.mlog.Clear();
-                this.mouse.StopWatchReset();
-                this.test_state = state.measure_wait;
-            }
-        }
-        
-        private void buttonCollect_Click(object sender, EventArgs e)
-        {
-            if (this.test_state == state.idle)
+            switch (dual_state)
             {
-                this.textBox1.Text = "1. Press and hold the left mouse button\r\n" +
-                                     "2. Move the mouse\r\n" +
-                                     "3. Release the left mouse button\r\n";
-                this.toolStripStatusLabel1.Text = "Press the left mouse button";
-                this.mlog1.Clear();
-                this.mlog2.Clear();
-                this.mouse.StopWatchReset();
-                this.test_state = state.collect_wait;
+                case dualstate.ready:
+
+                    labelID.Text = "ID: not set";
+                    label2.Text = "ID: not set";
+                    buttonEnableDual.Text = "Enable dual device";
+                    dual_state = dualstate.disable;
+                    tabControl1.TabPages.RemoveAt(1);
+                    break;
+
+                case dualstate.disable:
+
+                    buttonEnableDual.Text = "Click here with Device 1";
+                    dual_state = dualstate.wait1;
+                    break;
+
+                case dualstate.wait1:
+
+                    buttonEnableDual.Text = "Click here with Device 2";
+                    dual_state = dualstate.wait2;
+
+                    mlog1.hDevice = last_released_leftclick;
+
+                    labelID.Text = "ID: " + mlog1.hDevice.ToString();
+
+                    break;
+
+                case dualstate.wait2:
+
+                    if (last_released_leftclick == mlog1.hDevice)
+                        break;
+
+                    mlog2.hDevice = last_released_leftclick;
+                    dual_state = dualstate.ready;
+                    tabControl1.TabPages.Add(tabPage2);
+                    buttonEnableDual.Text = "Disable dual device";
+                    label2.Text = "ID: " + mlog2.hDevice.ToString();
+
+                    break;
+
+                default:
+                    break;
+
             }
         }
 
@@ -244,6 +268,36 @@ namespace MouseTester
                 buttonLog.Text = "Log Start (F2)";
             }
         }
+        #endregion
+
+        #region UI CALLBACKS
+        private void buttonMeasure_Click(object sender, EventArgs e)
+        {
+            if (this.test_state == state.idle) {
+                this.textBox1.Text = "1. Press and hold the left mouse button\r\n" +
+                                     "2. Move the mouse 10 cm in a straight line\r\n" +
+                                     "3. Release the left mouse button\r\n";
+                this.toolStripStatusLabel1.Text = "Press the left mouse button";
+                this.mlog.Clear();
+                this.mouse.StopWatchReset();
+                this.test_state = state.measure_wait;
+            }
+        }
+        
+        private void buttonCollect_Click(object sender, EventArgs e)
+        {
+            if (this.test_state == state.idle)
+            {
+                this.textBox1.Text = "1. Press and hold the left mouse button\r\n" +
+                                     "2. Move the mouse\r\n" +
+                                     "3. Release the left mouse button\r\n";
+                this.toolStripStatusLabel1.Text = "Press the left mouse button";
+                this.mlog1.Clear();
+                this.mlog2.Clear();
+                this.mouse.StopWatchReset();
+                this.test_state = state.collect_wait;
+            }
+        }
 
         private void buttonPlot_Click(object sender, EventArgs e)
         {
@@ -260,48 +314,6 @@ namespace MouseTester
 
                 MousePlot mousePlot = new MousePlot(this.mlog1, dual_state == dualstate.ready ? this.mlog2 : null, settings);
                 mousePlot.Show();
-            }
-        }
-
-        private void buttonLoad_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv|All Files(*.*)|*.*";
-            openFileDialog1.FilterIndex = 1;
-            openFileDialog1.Multiselect = false;
-            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                this.mlog.Load(openFileDialog1.FileName);
-            }
-            this.textBox1.Text = "Events: " + this.mlog.Events.Count.ToString() + "\r\n" +
-                                 "Sum X: " + this.mlog.deltaX().ToString() + " counts    " + Math.Abs(this.mlog.deltaX() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
-                                 "Sum Y: " + this.mlog.deltaY().ToString() + " counts    " + Math.Abs(this.mlog.deltaY() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
-                                 "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
-            this.textBoxDesc.Text = this.mlog.Desc.ToString();
-            this.textBoxCPI.Text = this.mlog.Cpi.ToString();
-
-            if (this.mlog.Cpi == 0.0)
-            {
-                MessageBox.Show("CPI value is invalid, please run Measure");
-                return;
-            }
-
-            /*if (this.mlog.Events.Count > 0)
-            {
-                MousePlot mousePlot = new MousePlot(this.mlog, null);
-                mousePlot.Show();
-            }*/
-        }
-
-        private void buttonSave_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "CSV Files (*.csv)|*.csv|All Files(*.*)|*.*";
-            saveFileDialog1.FilterIndex = 1;
-            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                this.mlog.Desc = textBoxDesc.Text;
-                this.mlog.Save(saveFileDialog1.FileName);
             }
         }
 
@@ -362,54 +374,50 @@ namespace MouseTester
                 this.textBoxDesc = textBoxDesc2;
             }
         }
+        #endregion
 
-        private void buttonEnableDual_MouseClick(object sender, MouseEventArgs e)
+        #region CSV
+        private void buttonLoad_Click(object sender, EventArgs e)
         {
-            switch (dual_state)
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv|All Files(*.*)|*.*";
+            openFileDialog1.FilterIndex = 1;
+            openFileDialog1.Multiselect = false;
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                case dualstate.ready:
+                this.mlog.Load(openFileDialog1.FileName);
+            }
+            this.textBox1.Text = "Events: " + this.mlog.Events.Count.ToString() + "\r\n" +
+                                 "Sum X: " + this.mlog.deltaX().ToString() + " counts    " + Math.Abs(this.mlog.deltaX() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
+                                 "Sum Y: " + this.mlog.deltaY().ToString() + " counts    " + Math.Abs(this.mlog.deltaY() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
+                                 "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
+            this.textBoxDesc.Text = this.mlog.Desc.ToString();
+            this.textBoxCPI.Text = this.mlog.Cpi.ToString();
 
-                    labelID.Text = "ID: not set";
-                    label2.Text = "ID: not set";
-                    buttonEnableDual.Text = "Enable dual device";
-                    dual_state = dualstate.disable;
-                    tabControl1.TabPages.RemoveAt(1);
-                    break;
+            if (this.mlog.Cpi == 0.0)
+            {
+                MessageBox.Show("CPI value is invalid, please run Measure");
+                return;
+            }
 
-                case dualstate.disable:
+            /*if (this.mlog.Events.Count > 0)
+            {
+                MousePlot mousePlot = new MousePlot(this.mlog, null);
+                mousePlot.Show();
+            }*/
+        }
 
-                    buttonEnableDual.Text = "Click here with Device 1";
-                    dual_state = dualstate.wait1;
-                    break;
-
-                case dualstate.wait1:
-
-                    buttonEnableDual.Text = "Click here with Device 2";
-                    dual_state = dualstate.wait2;
-
-                    mlog1.hDevice = last_released_leftclick;
-
-                    labelID.Text = "ID: " + mlog1.hDevice.ToString();
-
-                    break;
-
-                case dualstate.wait2:
-
-                    if (last_released_leftclick == mlog1.hDevice)
-                        break;
-
-                    mlog2.hDevice = last_released_leftclick;
-                    dual_state = dualstate.ready;
-                    tabControl1.TabPages.Add(tabPage2);
-                    buttonEnableDual.Text = "Disable dual device";
-                    label2.Text = "ID: " + mlog2.hDevice.ToString();
-
-                    break;
-
-                default:
-                    break;
-
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "CSV Files (*.csv)|*.csv|All Files(*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.mlog.Desc = textBoxDesc.Text;
+                this.mlog.Save(saveFileDialog1.FileName);
             }
         }
+        #endregion
     }
 }
