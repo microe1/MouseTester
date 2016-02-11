@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace MouseTester
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private RawMouse mouse = new RawMouse();
 
@@ -25,7 +25,7 @@ namespace MouseTester
 
         private IntPtr last_released_leftclick = IntPtr.Zero;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             try 

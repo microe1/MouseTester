@@ -78,13 +78,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GraphComponents.cs" />
     <Compile Include="GraphicsRenderContext.cs" />
+    <Compile Include="GraphType.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="MouseEvent.cs" />
     <Compile Include="MouseLog.cs" />
@@ -98,8 +100,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawMouse.cs" />
     <Compile Include="Settings.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MousePlot.resx">
       <DependentUpon>MousePlot.cs</DependentUpon>
