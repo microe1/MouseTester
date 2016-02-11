@@ -67,21 +67,21 @@ namespace MouseTester
         private void plot_fit()
         {
             double sum = 0.0;
+            const int magic1 = 3;
+            const int magic2 = 5;
 
             lines.Points.Clear();
 
-            for (int i = 0; ((i < 8) && (i < scatters.Points.Count)); i++)
-            {
-                sum = sum + scatters.Points[i].Y;
-            }
+            for (int i = 0; ((i < magic1 + magic2) && (i < scatters.Points.Count)); i++)
+                sum += scatters.Points[i].Y;
 
-            for (int i = 3; i < scatters.Points.Count - 5; i++)
+            for (int i = magic1; i < scatters.Points.Count - magic2; i++)
             {
                 double x = (scatters.Points[i].X + scatters.Points[i + 1].X) / 2.0;
                 double y = sum;
                 lines.Points.Add(new DataPoint(x, y / 8.0));
-                sum = sum - scatters.Points[i - 3].Y;
-                sum = sum + scatters.Points[i + 5].Y;
+                sum -= scatters.Points[i - magic1].Y;
+                sum += scatters.Points[i + magic2].Y;
             }
         }
 #else

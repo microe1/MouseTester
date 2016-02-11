@@ -81,7 +81,6 @@ namespace MouseTester
 
         public void logMouseEvent(object RawMouse, MouseEvent mevent)
         {
-            //Debug.WriteLine(mevent.ts + ", " + mevent.lastx + ", " + mevent.lasty + ", " + mevent.buttons);
             if (this.test_state == state.idle)
             {
                 if (mevent.buttonflags == 0x0002)
@@ -121,7 +120,6 @@ namespace MouseTester
             {
                 if (mevent.buttonflags == 0x0001)
                 {
-                    //this.mlog.Add(mevent);
                     this.toolStripStatusLabel1.Text = "Collecting";
                     this.test_state = state.collect;
                 }
@@ -129,55 +127,12 @@ namespace MouseTester
             else if (this.test_state == state.collect)
             {
                 if (mevent.buttonflags == 0x0002)
-                {
-                    double ts_min = 0.0;
-
-                    if (mlog1.Events.Count > 0)
-                        ts_min = mlog1.Events[0].ts;
-
-                    if (dual_state == dualstate.ready && mlog2.Events.Count > 0 && mlog2.Events[0].ts < ts_min)
-                        ts_min = mlog2.Events[0].ts;
-
-                    foreach (MouseEvent e in this.mlog1.Events)
-                        e.ts -= ts_min;
-                    foreach (MouseEvent e in this.mlog2.Events)
-                        e.ts -= ts_min;
-
-                    this.textBox1.Text = "Press the plot button to view data\r\n" +
-                                         "        or\r\n" +
-                                         "Press the save button to save log file\r\n" +
-                                         "Events: " + this.mlog.Events.Count.ToString() + "\r\n" +
-                                         "Sum X: " + this.mlog.deltaX().ToString() + " counts    " + Math.Abs(this.mlog.deltaX() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
-                                         "Sum Y: " + this.mlog.deltaY().ToString() + " counts    " + Math.Abs(this.mlog.deltaY() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
-                                         "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
-                    this.toolStripStatusLabel1.Text = "";
-                    this.test_state = state.idle;
-                }
+                    FinishCollecting();
                 else
-                {
-                    if (dual_state == dualstate.ready)
-                    {
-                        if (mevent.hDevice == mlog1.hDevice)
-                            mlog1.Events.Add(mevent);
-                        else if (mevent.hDevice == mlog2.hDevice)
-                            mlog2.Events.Add(mevent);
-                    }
-                    else
-                        this.mlog.Add(mevent);
-                }
+                    AddEvent(mevent);
             }
             else if (this.test_state == state.log)
-            {
-                if (dual_state == dualstate.ready)
-                {
-                    if (mevent.hDevice == mlog1.hDevice)
-                        mlog1.Events.Add(mevent);
-                    else if (mevent.hDevice == mlog2.hDevice)
-                        mlog2.Events.Add(mevent);
-                }
-                else
-                    this.mlog.Add(mevent);
-            }
+                AddEvent(mevent);
         }
 
         private void buttonEnableDual_MouseClick(object sender, MouseEventArgs e)
@@ -203,9 +158,7 @@ namespace MouseTester
 
                     buttonEnableDual.Text = "Click here with Device 2";
                     dual_state = dualstate.wait2;
-
                     mlog1.hDevice = last_released_leftclick;
-
                     labelID.Text = "ID: " + mlog1.hDevice.ToString();
 
                     break;
@@ -243,30 +196,49 @@ namespace MouseTester
             }
             else if (this.test_state == state.log)
             {
-                double ts_min = 0.0;
-
-                if (mlog1.Events.Count > 0)
-                    ts_min = mlog1.Events[0].ts;
-
-                if (dual_state == dualstate.ready && mlog2.Events.Count > 0 && mlog2.Events[0].ts < ts_min)
-                    ts_min = mlog2.Events[0].ts;
-
-                foreach (MouseEvent me in this.mlog1.Events)
-                    me.ts -= ts_min;
-                foreach (MouseEvent me in this.mlog2.Events)
-                    me.ts -= ts_min;
-
-                this.textBox1.Text = "Press the plot button to view data\r\n" +
-                                     "        or\r\n" +
-                                     "Press the save button to save log file\r\n" +
-                                     "Events: " + this.mlog.Events.Count.ToString() + "\r\n" +
-                                     "Sum X: " + this.mlog.deltaX().ToString() + " counts    " + Math.Abs(this.mlog.deltaX() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
-                                     "Sum Y: " + this.mlog.deltaY().ToString() + " counts    " + Math.Abs(this.mlog.deltaY() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
-                                     "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
-                this.toolStripStatusLabel1.Text = "";
-                this.test_state = state.idle;
+                FinishCollecting();
                 buttonLog.Text = "Log Start (F2)";
             }
+        }
+
+        private void FinishCollecting()
+        {
+            double ts_min = 0.0;
+
+            if (mlog1.Events.Count > 0)
+                ts_min = mlog1.Events[0].ts;
+
+            if (dual_state == dualstate.ready && mlog2.Events.Count > 0 && mlog2.Events[0].ts < ts_min)
+                ts_min = mlog2.Events[0].ts;
+
+            foreach (MouseEvent me in this.mlog1.Events)
+                me.ts -= ts_min;
+            foreach (MouseEvent me in this.mlog2.Events)
+                me.ts -= ts_min;
+
+            this.textBox1.Text = "Press the plot button to view data\r\n" +
+                                 "        or\r\n" +
+                                 "Press the save button to save log file\r\n" +
+                                 "Events: " + this.mlog.Events.Count.ToString() + "\r\n" +
+                                 "Sum X: " + this.mlog.deltaX().ToString() + " counts    " + Math.Abs(this.mlog.deltaX() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
+                                 "Sum Y: " + this.mlog.deltaY().ToString() + " counts    " + Math.Abs(this.mlog.deltaY() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm\r\n" +
+                                 "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
+            this.toolStripStatusLabel1.Text = "";
+            this.test_state = state.idle;
+        }
+
+        private void AddEvent(MouseEvent mevent)
+        {
+            if (dual_state == dualstate.ready)
+            {
+                if (mevent.hDevice == mlog1.hDevice)
+                    mlog1.Events.Add(mevent);
+                else if (mevent.hDevice == mlog2.hDevice)
+                    mlog2.Events.Add(mevent);
+            }
+            else
+                this.mlog.Add(mevent);
+
         }
         #endregion
 

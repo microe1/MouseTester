@@ -69,12 +69,12 @@ namespace MouseTester
             this.numericUpDownStart.Minimum = 0;
             this.numericUpDownStart.Maximum = last_end;
             this.numericUpDownStart.Value = last_start;
-            this.numericUpDownStart.ValueChanged += new System.EventHandler(this.numericUpDownStart_ValueChanged);
+            this.numericUpDownStart.ValueChanged += new EventHandler(this.numericUpDownStart_ValueChanged);
 
             this.numericUpDownEnd.Minimum = 0;
             this.numericUpDownEnd.Maximum = last_end;
             this.numericUpDownEnd.Value = last_end;
-            this.numericUpDownEnd.ValueChanged += new System.EventHandler(this.numericUpDownEnd_ValueChanged);
+            this.numericUpDownEnd.ValueChanged += new EventHandler(this.numericUpDownEnd_ValueChanged);
 
             checkBoxLines.Checked = settings.lines;
             checkBoxBgnd.Checked = settings.transparent;
@@ -103,9 +103,9 @@ namespace MouseTester
             if (settings.plotindex >= 0 && settings.plotindex < comboBoxPlotType.Items.Count)
                 comboBoxPlotType.SelectedIndex = settings.plotindex;
 
-            this.checkBoxLines.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
-            this.checkBoxStem.CheckedChanged += new System.EventHandler(this.Refresh_Plot_Helper);
-            this.comboBoxPlotType.SelectedIndexChanged += new System.EventHandler(this.Refresh_Plot_Helper);
+            this.checkBoxLines.CheckedChanged += new EventHandler(this.Refresh_Plot_Helper);
+            this.checkBoxStem.CheckedChanged += new EventHandler(this.Refresh_Plot_Helper);
+            this.comboBoxPlotType.SelectedIndexChanged += new EventHandler(this.Refresh_Plot_Helper);
             refresh_plot();
         }
 
@@ -166,7 +166,7 @@ namespace MouseTester
             var pm = new PlotModel()
             {
                 Title = mlog.Desc + (dual ? " vs. " + mlog2.Desc : ""),
-                Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" + " & " + numericUpDownDelay.Value.ToString("+#.#;-#.#;0", CultureInfo.InvariantCulture) + " ms delay" : ""),
+                Subtitle = PlotSubtitle(),
                 PlotType = PlotType.Cartesian,
                 Background = OxyColors.White
             };
@@ -285,6 +285,11 @@ namespace MouseTester
                 y_max = y;
         }
 
+        private string PlotSubtitle()
+        {
+            return mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" + " & " + numericUpDownDelay.Value.ToString("+#.#;-#.#;0", CultureInfo.InvariantCulture) + " ms delay" : "");
+        }
+
         private void Refresh_Plot_Helper(object sender, EventArgs e)
         {
             refresh_plot();
@@ -314,8 +319,7 @@ namespace MouseTester
         }
         private void numericUpDownDelay_ValueChanged(object sender, EventArgs e)
         {
-            plot1.Model.Subtitle = mlog.Cpi.ToString() + " cpi" + (dual ? " vs. " + mlog2.Cpi.ToString() + " cpi" + " & " + numericUpDownDelay.Value.ToString("+#.#;-#.#;0", CultureInfo.InvariantCulture) + " ms delay" : "");
-
+            plot1.Model.Subtitle = PlotSubtitle();
             refresh_plot();
         }
 
@@ -345,7 +349,7 @@ namespace MouseTester
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Filter = "PNG Files (*.png)|*.png";
             saveFileDialog1.FilterIndex = 1;
-            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 int width = checkBoxSize.Checked ? 800 : (int)this.plot1.Model.Width;
                 int height = checkBoxSize.Checked ? 600 : (int)this.plot1.Model.Height;
