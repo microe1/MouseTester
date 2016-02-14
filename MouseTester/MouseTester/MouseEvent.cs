@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MouseTester
 {
@@ -10,10 +7,13 @@ namespace MouseTester
         public ushort buttonflags;
         public int lastx;
         public int lasty;
-        public double ts;
+        public double ts, lastts;
 
-        public MouseEvent(ushort buttonflags, int lastx, int lasty, double ts)
+        public IntPtr hDevice;
+
+        public MouseEvent(IntPtr hDevice, ushort buttonflags, int lastx, int lasty, double ts)
         {
+            this.hDevice = hDevice;
             this.buttonflags = buttonflags;
             this.lastx = lastx;
             this.lasty = lasty;

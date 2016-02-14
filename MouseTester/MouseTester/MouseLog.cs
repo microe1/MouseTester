@@ -4,39 +4,16 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace MouseTester
 {
     public class MouseLog
     {
-        private string desc = "MouseTester";
-        private double cpi = 400.0;
-        private List<MouseEvent> events = new List<MouseEvent>(1000000);
-        
-        public double Cpi 
-        { 
-            get 
-            { 
-                return this.cpi; 
-            } 
-            set
-            { 
-                cpi = value; 
-            }
-        }
+        public double Cpi = 400.0;
+        public string Desc = "MouseTester";
+        public IntPtr hDevice;
 
-        public string Desc
-        {
-            get
-            {
-                return this.desc;
-            }
-            set
-            {
-                this.desc = value;
-            }
-        }
+        private List<MouseEvent> events = new List<MouseEvent>(1000000);
 
         public List<MouseEvent> Events
         {
@@ -64,14 +41,14 @@ namespace MouseTester
             {
                 using (StreamReader sr = File.OpenText(fname))
                 {
-                    this.desc = sr.ReadLine();
-                    this.cpi = double.Parse(sr.ReadLine());
+                    this.Desc = sr.ReadLine();
+                    this.Cpi = double.Parse(sr.ReadLine());
                     string headerline = sr.ReadLine();
                     while (sr.Peek() > -1)
                     {
                         string line = sr.ReadLine();
                         string[] values = line.Split(',');
-                        this.Add(new MouseEvent(0, int.Parse(values[0]), int.Parse(values[1]), double.Parse(values[2])));
+                        this.Add(new MouseEvent((IntPtr)0, 0, int.Parse(values[0]), int.Parse(values[1]), double.Parse(values[2], CultureInfo.InvariantCulture)));
                     }
                 }
             }
@@ -87,8 +64,8 @@ namespace MouseTester
             {
                 using (StreamWriter sw = File.CreateText(fname))
                 {
-                    sw.WriteLine(this.desc);
-                    sw.WriteLine(this.cpi.ToString());
+                    sw.WriteLine(this.Desc);
+                    sw.WriteLine(this.Cpi.ToString());
                     sw.WriteLine("xCount,yCount,Time (ms)");
                     foreach (MouseEvent e in this.events)
                     {
