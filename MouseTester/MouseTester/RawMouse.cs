@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace MouseTester
 {
-    class RawMouse
+    public partial class Form1
     {
         private const int RIDEV_INPUTSINK = 0x00000100;
         private const int RID_INPUT = 0x10000003;
@@ -101,17 +101,21 @@ namespace MouseTester
             public uint ExtraInformation;
         }
 
-        [StructLayout(LayoutKind.Explicit)]
+        [StructLayout(LayoutKind.Sequential)]
         internal struct RAWINPUT
         {
-            [FieldOffset(0)]
             public RAWINPUTHEADER header;
-            [FieldOffset(16)]
-            public RAWMOUSE mouse;
-            [FieldOffset(16)]
-            public RAWKEYBOARD keyboard;
-            [FieldOffset(16)]
-            public RAWHID hid;
+            public Union data;
+            [StructLayout(LayoutKind.Explicit)]
+            public struct Union
+            {
+                [FieldOffset(0)]
+                public RAWMOUSE mouse;
+                [FieldOffset(0)]
+                public RAWKEYBOARD keyboard;
+                [FieldOffset(0)]
+                public RAWHID hid;
+            }
         }
 
         [DllImport("user32.dll")]
@@ -120,15 +124,11 @@ namespace MouseTester
                                                    uint cbSize);
 
         [DllImport("User32.dll")]
-        extern static uint GetRawInputData(IntPtr hRawInput,
+        extern static int GetRawInputData(IntPtr hRawInput,
                                            uint uiCommand,
-                                           IntPtr pData,
+                                           out RAWINPUT pData, //IntPtr pData,
                                            ref uint pcbSize,
                                            uint cbSizeHeader);
-
-
-        private Stopwatch stopWatch = new Stopwatch();
-        public double stopwatch_freq = 0.0;
 
         public void RegisterRawInputMouse(IntPtr hwnd)
         {
@@ -141,66 +141,13 @@ namespace MouseTester
             if (!RegisterRawInputDevices(rid, (uint)rid.Length, (uint)Marshal.SizeOf(rid[0])))
             {
                 Debug.WriteLine("RegisterRawInputDevices() Failed");
-            }
-
-            //Debug.WriteLine("High Resolution Stopwatch: " + Stopwatch.IsHighResolution + "\n" +
-            //                "Stopwatch TS: " + (1e6 / Stopwatch.Frequency).ToString() + " us\n" +
-            //                "Stopwatch Hz: " + (Stopwatch.Frequency / 1e6).ToString() + " MHz\n");
-
-            this.stopwatch_freq = 1e3 / Stopwatch.Frequency;
+            }       
         }
 
-        public void StopWatchReset()
-        {
-            this.stopWatch.Reset();
-            this.stopWatch.Start();
-        }
+        [DllImport("Kernel32.dll")]
+        private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
 
-        public delegate void MouseEventHandler(object RawMouse, MouseEvent meventinfo);
-        public MouseEventHandler mevent;
-
-        public void ProcessRawInput(Message m)
-        {
-            if (m.Msg == WM_INPUT)
-            {
-                uint dwSize = 0;
-
-                GetRawInputData(m.LParam,
-                                RID_INPUT, IntPtr.Zero,
-                                ref dwSize,
-                                (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-
-                IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
-                try
-                {
-                    if (buffer != IntPtr.Zero &&
-                        GetRawInputData(m.LParam,
-                                        RID_INPUT,
-                                        buffer,
-                                        ref dwSize,
-                                        (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER))) == dwSize)
-                    {
-                        RAWINPUT raw = (RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RAWINPUT));
-
-                        if (raw.header.dwType == RIM_TYPEMOUSE)
-                        {
-                            if (mevent != null)
-                            {
-                                MouseEvent meventinfo = new MouseEvent(raw.mouse.buttonsStr.usButtonFlags , raw.mouse.lLastX, -raw.mouse.lLastY,
-                                                                       stopWatch.ElapsedTicks * 1e3 / Stopwatch.Frequency);
-                                mevent(this, meventinfo);
-                            }
-                            //Debug.WriteLine((stopWatch.ElapsedTicks * 1e3 / Stopwatch.Frequency).ToString() + ", " +
-                            //                raw.mouse.lLastX.ToString() + ", " +
-                            //                raw.mouse.lLastY.ToString());
-                        }
-                    }
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(buffer);
-                }
-            }
-        }
+        [DllImport("Kernel32.dll")]
+        private static extern bool QueryPerformanceFrequency(out long lpFrequency);
     }
 }

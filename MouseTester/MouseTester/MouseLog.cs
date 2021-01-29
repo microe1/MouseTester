@@ -12,8 +12,8 @@ namespace MouseTester
     {
         private string desc = "MouseTester";
         private double cpi = 400.0;
-        private List<MouseEvent> events = new List<MouseEvent>(1000000);
-        
+        private List<MouseEvent> events = new List<MouseEvent>();
+
         public double Cpi 
         { 
             get 
@@ -71,7 +71,14 @@ namespace MouseTester
                     {
                         string line = sr.ReadLine();
                         string[] values = line.Split(',');
-                        this.Add(new MouseEvent(0, int.Parse(values[0]), int.Parse(values[1]), double.Parse(values[2])));
+                        if (values.Length == 4)
+                        {
+                            this.Add(new MouseEvent(ushort.Parse(values[3]), int.Parse(values[0]), int.Parse(values[1]), double.Parse(values[2])));
+                        }
+                        else if (values.Length == 3)
+                        {
+                            this.Add(new MouseEvent(0, int.Parse(values[0]), int.Parse(values[1]), double.Parse(values[2])));
+                        }
                     }
                 }
             }
@@ -89,10 +96,10 @@ namespace MouseTester
                 {
                     sw.WriteLine(this.desc);
                     sw.WriteLine(this.cpi.ToString());
-                    sw.WriteLine("xCount,yCount,Time (ms)");
+                    sw.WriteLine("xCount,yCount,Time (ms),buttonflags");
                     foreach (MouseEvent e in this.events)
                     {
-                        sw.WriteLine(e.lastx.ToString() + "," + e.lasty.ToString() + "," + e.ts.ToString(CultureInfo.InvariantCulture));
+                        sw.WriteLine(e.lastx.ToString() + "," + e.lasty.ToString() + "," + e.ts.ToString(CultureInfo.InvariantCulture) + "," + e.buttonflags.ToString());
                     }
                 }
             }

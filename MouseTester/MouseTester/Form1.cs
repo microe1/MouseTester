@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -17,24 +18,23 @@ namespace MouseTester
 
     public partial class Form1 : Form
     {
-        private RawMouse mouse = new RawMouse();
         private MouseLog mlog = new MouseLog();
         enum state { idle, measure_wait, measure, collect_wait, collect, log };
         private state test_state = state.idle;
+        private long pFreq;
 
         public Form1()
         {
             InitializeComponent();
             try {
-                Process.GetCurrentProcess().ProcessorAffinity = new IntPtr(2); // Use only the second core 
-                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime; // Set highest process priority
-                Thread.CurrentThread.Priority = ThreadPriority.Highest; // Set highest thread priority
+                // Process.GetCurrentProcess().ProcessorAffinity = new IntPtr(2); // Use only the second core 
+                // Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime; // Set highest process priority
+                // Thread.CurrentThread.Priority = ThreadPriority.Highest; // Set highest thread priority
             } catch (Exception ex) {
                 Debug.WriteLine(ex.ToString());
             }
 
-            this.mouse.RegisterRawInputMouse(Handle);
-            this.mouse.mevent += new RawMouse.MouseEventHandler(this.logMouseEvent);
+            this.RegisterRawInputMouse(Handle);
             this.textBoxDesc.Text = this.mlog.Desc.ToString();
             this.textBoxCPI.Text = this.mlog.Cpi.ToString();
             this.textBox1.Text = "Enter the correct CPI" +
@@ -43,17 +43,82 @@ namespace MouseTester
                                  "\r\n        or\r\n" +
                                  "Press the Load button";
             this.toolStripStatusLabel1.Text = "";
+            this.KeyPreview = true;
+            this.KeyDown += new KeyEventHandler(Form1_KeyDown);
+
+            QueryPerformanceFrequency(out pFreq);
+            // Debug.WriteLine("PerformanceCounterFrequency: " + pFreq.ToString() + " Hz\n");
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            // TODO: Replace with Global Hotkey
+            // https://social.msdn.microsoft.com/Forums/vstudio/en-US/c061954b-19bf-463b-a57d-b09c98a3fe7d/assign-global-hotkey-to-a-system-tray-application-in-c?forum=csharpgeneral
+
+            if (e.KeyCode == Keys.F1)
+            {
+                buttonLog.PerformClick();
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.F2)
+            {
+                buttonLog.PerformClick();
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.F3)
+            {
+                buttonPlot.PerformClick();
+                e.Handled = false;
+            }
         }
 
         protected override void WndProc(ref Message m)
         {
-            this.mouse.ProcessRawInput(m);
+            if (m.Msg == WM_INPUT)
+            {
+#if true
+                RAWINPUT raw = new RAWINPUT();
+                uint size = (uint)Marshal.SizeOf(typeof(RAWINPUT));
+                int outsize = GetRawInputData(m.LParam, RID_INPUT, out raw, ref size, (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+                if (outsize != -1)
+                {
+                    if (raw.header.dwType == RIM_TYPEMOUSE)
+                    {
+                        QueryPerformanceCounter(out long pCounter);
+                        logMouseEvent(new MouseEvent(raw.data.mouse.buttonsStr.usButtonFlags, raw.data.mouse.lLastX, -(raw.data.mouse.lLastY), pCounter));
+                    }
+                }
+#else
+                uint dwSize = 0;
+
+                GetRawInputData(m.LParam, RID_INPUT, IntPtr.Zero, ref dwSize, (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER)));
+
+                IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
+                try
+                {
+                    if ((buffer != IntPtr.Zero) &&
+                        (GetRawInputData(m.LParam, RID_INPUT, buffer, ref dwSize, (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER))) == dwSize))
+                    {
+                        RAWINPUT raw = (RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RAWINPUT));
+
+                        if (raw.header.dwType == RIM_TYPEMOUSE)
+                        {
+                            logMouseEvent(new MouseEvent(raw.data.mouse.buttonsStr.usButtonFlags, raw.data.mouse.lLastX, -(raw.data.mouse.lLastY), pCounter));
+                        }
+                    }
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(buffer);
+                }
+#endif
+            }
             base.WndProc(ref m);
         }
 
-        public void logMouseEvent(object RawMouse, MouseEvent mevent)
+        private void logMouseEvent(MouseEvent mevent)
         {
-            //Debug.WriteLine(mevent.ts + ", " + mevent.lastx + ", " + mevent.lasty + ", " + mevent.buttons);
+            // Debug.WriteLine(mevent.pcounter + ", " + mevent.lastx + ", " + mevent.lasty + ", " + mevent.buttonflags);
             if (this.test_state == state.idle)
             {
 
@@ -74,13 +139,12 @@ namespace MouseTester
                 {
                     double x = 0.0;
                     double y = 0.0;
-                    double ts_min = this.mlog.Events[0].ts;
                     foreach (MouseEvent e in this.mlog.Events)
                     {
-                        e.ts -= ts_min;
                         x += (double)e.lastx;
                         y += (double)e.lasty;
                     }
+                    tsCalc();
                     this.mlog.Cpi = Math.Round(Math.Sqrt((x * x) + (y * y)) / (10 / 2.54));
                     this.textBoxCPI.Text = this.mlog.Cpi.ToString();
                     this.textBox1.Text = "Press the Collect or Log Start button\r\n";
@@ -102,11 +166,7 @@ namespace MouseTester
                 this.mlog.Add(mevent);
                 if (mevent.buttonflags == 0x0002)
                 {
-                    double ts_min = this.mlog.Events[0].ts;
-                    foreach (MouseEvent e in this.mlog.Events)
-                    {
-                        e.ts -= ts_min;
-                    }
+                    tsCalc();
                     this.textBox1.Text = "Press the plot button to view data\r\n" +
                                          "        or\r\n" +
                                          "Press the save button to save log file\r\n" +
@@ -132,7 +192,6 @@ namespace MouseTester
                                      "3. Release the left mouse button\r\n";
                 this.toolStripStatusLabel1.Text = "Press the left mouse button";
                 this.mlog.Clear();
-                this.mouse.StopWatchReset();
                 this.test_state = state.measure_wait;
             }
         }
@@ -146,7 +205,6 @@ namespace MouseTester
                                      "3. Release the left mouse button\r\n";
                 this.toolStripStatusLabel1.Text = "Press the left mouse button";
                 this.mlog.Clear();
-                this.mouse.StopWatchReset();
                 this.test_state = state.collect_wait;
             }
         }
@@ -158,17 +216,12 @@ namespace MouseTester
                 this.textBox1.Text = "1. Press the Log Stop button\r\n";
                 this.toolStripStatusLabel1.Text = "Logging...";
                 this.mlog.Clear();
-                this.mouse.StopWatchReset();
                 this.test_state = state.log;
-                buttonLog.Text = "Log Stop";
+                buttonLog.Text = "Stop (F2)";
             }
             else if (this.test_state == state.log)
             {
-                double ts_min = this.mlog.Events[1].ts;
-                foreach (MouseEvent me in this.mlog.Events)
-                {
-                    me.ts -= ts_min;
-                }
+                tsCalc();
                 this.textBox1.Text = "Press the plot button to view data\r\n" +
                                      "        or\r\n" +
                                      "Press the save button to save log file\r\n" +
@@ -178,7 +231,7 @@ namespace MouseTester
                                      "Path: " + this.mlog.path().ToString("0") + " counts    " + (this.mlog.path() / this.mlog.Cpi * 2.54).ToString("0.0") + " cm";
                 this.toolStripStatusLabel1.Text = "";
                 this.test_state = state.idle;
-                buttonLog.Text = "Log Start";
+                buttonLog.Text = "Start (F1)";
             }
         }
 
@@ -239,6 +292,15 @@ namespace MouseTester
                 this.textBoxCPI.Text = this.mlog.Cpi.ToString();
             }
             this.textBox1.Text = "Press the Collect or Log Start button\r\n";
+        }
+
+        private void tsCalc()
+        {
+            long pcounter_min = this.mlog.Events[0].pcounter;
+            foreach (MouseEvent me in this.mlog.Events)
+            {
+                me.ts = (me.pcounter - pcounter_min) * 1000.0 / pFreq;
+            }
         }
     }
 }

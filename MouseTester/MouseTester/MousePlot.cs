@@ -32,7 +32,25 @@ namespace MouseTester
         public MousePlot(MouseLog Mlog)
         {
             InitializeComponent();
-            this.mlog = Mlog;
+            this.mlog = new MouseLog();
+            this.mlog.Desc = Mlog.Desc;
+            this.mlog.Cpi = Mlog.Cpi;
+            int i = 1;
+            int x = Mlog.Events[0].lastx;
+            int y = Mlog.Events[0].lasty;
+            ushort buttonflags = Mlog.Events[0].buttonflags;
+            double ts = Mlog.Events[0].ts;
+            while (i < Mlog.Events.Count)
+            {
+                this.mlog.Add(new MouseEvent(buttonflags, x, y, ts));
+                x = Mlog.Events[i].lastx;
+                y = Mlog.Events[i].lasty;
+                buttonflags = Mlog.Events[i].buttonflags;
+                ts = Mlog.Events[i].ts;
+                i++;
+            }
+            this.mlog.Add(new MouseEvent(buttonflags, x, y, ts));
+
             this.last_start = 0;
             this.last_end = this.mlog.Events.Count - 1;
             initialize_plot();
@@ -75,12 +93,13 @@ namespace MouseTester
             PlotModel pm = plot1.Model;
             pm.Series.Clear();
             pm.Axes.Clear();
+            OxyColor singleLineColor = OxyColors.Green;
 
             var scatterSeries1 = new ScatterSeries
             {
                 BinSize = 8,
                 MarkerFill = OxyColors.Blue,
-                MarkerSize = 2.0,
+                MarkerSize = 1.5,
                 MarkerStroke = OxyColors.Blue,
                 MarkerStrokeThickness = 1.0,
                 MarkerType = MarkerType.Circle
@@ -90,7 +109,7 @@ namespace MouseTester
             {
                 BinSize = 8,
                 MarkerFill = OxyColors.Red,
-                MarkerSize = 2.0,
+                MarkerSize = 1.5,
                 MarkerStroke = OxyColors.Red,
                 MarkerStrokeThickness = 1.0,
                 MarkerType = MarkerType.Circle
@@ -100,7 +119,7 @@ namespace MouseTester
             {
                 Color = OxyColors.Blue,
                 LineStyle = LineStyle.Solid,
-                StrokeThickness = 1.0,
+                StrokeThickness = 2.0,
                 Smooth = true
             };
 
@@ -108,7 +127,7 @@ namespace MouseTester
             {
                 Color = OxyColors.Red,
                 LineStyle = LineStyle.Solid,
-                StrokeThickness = 1.0,
+                StrokeThickness = 2.0,
                 Smooth = true
             };            
 
@@ -155,6 +174,7 @@ namespace MouseTester
                 if (!checkBoxLines.Checked)
                 {
                     plot_fit(scatterSeries1, lineSeries1);
+                    lineSeries1.Color = singleLineColor;
                 }
                 pm.Series.Add(lineSeries1);
                 if (checkBoxStem.Checked)
@@ -169,6 +189,7 @@ namespace MouseTester
                 if (!checkBoxLines.Checked)
                 {
                     plot_fit(scatterSeries1, lineSeries1);
+                    lineSeries1.Color = singleLineColor;
                 }
                 pm.Series.Add(lineSeries1);
                 if (checkBoxStem.Checked)
@@ -184,6 +205,7 @@ namespace MouseTester
                 if (!checkBoxLines.Checked)
                 {
                     plot_fit(scatterSeries1, lineSeries1);
+                    lineSeries1.Color = singleLineColor;
                 }
                 pm.Series.Add(lineSeries1);
                 if (checkBoxStem.Checked)
@@ -218,6 +240,7 @@ namespace MouseTester
                 if (!checkBoxLines.Checked)
                 {
                     plot_fit(scatterSeries1, lineSeries1);
+                    lineSeries1.Color = singleLineColor;
                 }
                 pm.Series.Add(lineSeries1);
                 if (checkBoxStem.Checked)
@@ -232,6 +255,7 @@ namespace MouseTester
                 if (!checkBoxLines.Checked)
                 {
                     plot_fit(scatterSeries1, lineSeries1);
+                    lineSeries1.Color = singleLineColor;
                 }
                 pm.Series.Add(lineSeries1);
                 if (checkBoxStem.Checked)
@@ -246,6 +270,7 @@ namespace MouseTester
                 if (checkBoxLines.Checked)
                 {
                     pm.Series.Add(lineSeries1);
+                    lineSeries1.Color = singleLineColor;
                 }
             }
 
@@ -512,7 +537,7 @@ namespace MouseTester
             }
         }
 
-#if true
+#if false
 // Window based smoothing
         private void plot_fit(ScatterSeries scatterSeries1, LineSeries lineSeries1)
         {
@@ -521,17 +546,23 @@ namespace MouseTester
             lineSeries1.Points.Clear();
 
             for (int i = 0; ((i < 8) && (i < scatterSeries1.Points.Count)); i++)
+                //for (int i = 0; ((i < 4) && (i < scatterSeries1.Points.Count)); i++)
             {
                 sum = sum + scatterSeries1.Points[i].Y;
             }
 
             for (int i = 3; i < scatterSeries1.Points.Count - 5; i++)
+                //for (int i = 1; i < scatterSeries1.Points.Count - 3; i++)
             {
                 double x = (scatterSeries1.Points[i].X + scatterSeries1.Points[i + 1].X) / 2.0;
                 double y = sum;
                 lineSeries1.Points.Add(new DataPoint(x, y / 8.0));
                 sum = sum - scatterSeries1.Points[i - 3].Y;
                 sum = sum + scatterSeries1.Points[i + 5].Y;
+                //lineSeries1.Points.Add(new DataPoint(x, y / 4.0));
+                //sum = sum - scatterSeries1.Points[i - 1].Y;
+                //sum = sum + scatterSeries1.Points[i + 3].Y;
+
             }
         }
 #else
@@ -543,14 +574,16 @@ namespace MouseTester
             lineSeries1.Points.Clear();
 
             int ind = 0;
-            for (double x = scatterSeries1.Points[0].X; x <= scatterSeries1.Points[scatterSeries1.Points.Count - 1].X; x += ms)
+            for (double x = ms; x <= scatterSeries1.Points[scatterSeries1.Points.Count - 1].X; x += ms)
             {
                 double sum = 0.0;
+                int count = 0;
                 while (scatterSeries1.Points[ind].X <= x)
                 {
                     sum += scatterSeries1.Points[ind++].Y;
+                    count++;
                 }
-                lineSeries1.Points.Add(new DataPoint(x - (ms / 2.0), sum / ms));
+                lineSeries1.Points.Add(new DataPoint(x - (ms / 2.0), sum / count));
             }
         }
 #endif
