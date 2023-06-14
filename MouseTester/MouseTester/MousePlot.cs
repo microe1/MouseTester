@@ -149,6 +149,9 @@ namespace MouseTester
                 StrokeThickness = 1.0
             };
 
+            // Only display statistics when "Interval" is selected
+            statisticsGroupBox.Visible = comboBoxPlotType.Text.Contains("Interval");
+
             if (comboBoxPlotType.Text.Contains("xyCount"))
             {
                 plot_xycounts_vs_time(scatterSeries1, scatterSeries2, stemSeries1, stemSeries2, lineSeries1, lineSeries2);
@@ -388,6 +391,7 @@ namespace MouseTester
         {
             xlabel = "Time (ms)";
             ylabel = "Update Time (ms)";
+            List<double> intervals = new List<double>();
             reset_minmax();
             for (int i = last_start; i <= last_end; i++)
             {
@@ -401,11 +405,32 @@ namespace MouseTester
                 {
                     y = this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts;
                 }
+                intervals.Add(y);
                 update_minmax(x, y);
                 scatterSeries1.Points.Add(new ScatterPoint(x, y));
                 lineSeries1.Points.Add(new DataPoint(x, y));
                 stemSeries1.Points.Add(new DataPoint(x, y));
             }
+
+            // Calculate statistics
+
+            intervals.Sort();
+            double sum = intervals.Sum();
+            int count = intervals.Count();
+            double average = sum / count;
+            double squared_deviations = 0.0;
+
+            foreach (double interval in intervals)
+            {
+                squared_deviations += Math.Pow(interval - average, 2);
+            }
+
+            maxInterval.Text = $"{intervals[count - 1]:0.00}ms";
+            minInterval.Text = $"{intervals[0]:0.00}ms";
+            avgInterval.Text = $"{average:0.00}ms";
+            stdevInterval.Text = $"{Math.Sqrt(squared_deviations / count):0.00}";
+            rangeInterval.Text = $"{intervals[count - 1] - intervals[0]:0.00}";
+            varianceInterval.Text = $"{squared_deviations / count:0.00}";
         }
 
         private void plot_xvelocity_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
