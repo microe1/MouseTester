@@ -1,0 +1,37 @@
+name: Create release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up MSVC environment
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Build executable
+        run: |
+          MSBuild.exe .\MouseTester\MouseTester.sln -p:Configuration=Release -p:Platform=x64
+
+      - name: Create folder structure
+        run: |
+          mkdir release\MouseTester
+          del .\MouseTester\MouseTester\bin\x64\Release\MouseTester.exe.config
+          del .\MouseTester\MouseTester\bin\x64\Release\MouseTester.pdb
+          move .\MouseTester\MouseTester\bin\x64\Release\* release\MouseTester
+
+      - name: Zip MouseTester
+        run: Compress-Archive -Path release\MouseTester -DestinationPath MouseTester.zip
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          files: MouseTester.zip
