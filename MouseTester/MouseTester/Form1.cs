@@ -237,7 +237,7 @@ namespace MouseTester
 
         private void buttonPlot_Click(object sender, EventArgs e)
         {
-            if (this.mlog.Events.Count > 0)
+            if (this.mlog.Events.Count > 0 && this.test_state != state.log && this.test_state != state.collect_wait)
             {
                 this.mlog.Desc = textBoxDesc.Text;
                 MousePlot mousePlot = new MousePlot(this.mlog);
