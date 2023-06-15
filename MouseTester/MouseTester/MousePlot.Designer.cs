@@ -32,18 +32,19 @@
             this.plot1 = new OxyPlot.WindowsForms.Plot();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.statisticsGroupBox = new System.Windows.Forms.GroupBox();
-            this.varianceInterval = new System.Windows.Forms.Label();
-            this.rangeInterval = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.stdevInterval = new System.Windows.Forms.Label();
-            this.minInterval = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.avgInterval = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.maxInterval = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.avgInterval = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.rangeInterval = new System.Windows.Forms.Label();
+            this.varianceInterval = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.minInterval = new System.Windows.Forms.Label();
+            this.stdevInterval = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.comboBoxPlotType = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -60,6 +61,7 @@
             this.splitContainer1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.statisticsGroupBox.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStart)).BeginInit();
@@ -82,8 +84,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(1084, 791);
-            this.splitContainer1.SplitterDistance = 700;
+            this.splitContainer1.Size = new System.Drawing.Size(1366, 826);
+            this.splitContainer1.SplitterDistance = 730;
             this.splitContainer1.TabIndex = 0;
             // 
             // plot1
@@ -95,7 +97,7 @@
             this.plot1.Location = new System.Drawing.Point(0, 0);
             this.plot1.Name = "plot1";
             this.plot1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plot1.Size = new System.Drawing.Size(1084, 700);
+            this.plot1.Size = new System.Drawing.Size(1366, 730);
             this.plot1.TabIndex = 0;
             this.plot1.Text = "plot1";
             this.plot1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
@@ -125,144 +127,178 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1078, 72);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1642, 85);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // statisticsGroupBox
             // 
-            this.statisticsGroupBox.Controls.Add(this.varianceInterval);
-            this.statisticsGroupBox.Controls.Add(this.rangeInterval);
-            this.statisticsGroupBox.Controls.Add(this.label6);
-            this.statisticsGroupBox.Controls.Add(this.label8);
-            this.statisticsGroupBox.Controls.Add(this.stdevInterval);
-            this.statisticsGroupBox.Controls.Add(this.minInterval);
-            this.statisticsGroupBox.Controls.Add(this.label7);
-            this.statisticsGroupBox.Controls.Add(this.label5);
-            this.statisticsGroupBox.Controls.Add(this.avgInterval);
-            this.statisticsGroupBox.Controls.Add(this.label3);
-            this.statisticsGroupBox.Controls.Add(this.maxInterval);
-            this.statisticsGroupBox.Controls.Add(this.label1);
+            this.statisticsGroupBox.AutoSize = true;
+            this.statisticsGroupBox.Controls.Add(this.tableLayoutPanel3);
             this.statisticsGroupBox.Location = new System.Drawing.Point(501, 3);
             this.statisticsGroupBox.Name = "statisticsGroupBox";
-            this.statisticsGroupBox.Size = new System.Drawing.Size(348, 63);
+            this.statisticsGroupBox.Size = new System.Drawing.Size(241, 75);
             this.statisticsGroupBox.TabIndex = 6;
             this.statisticsGroupBox.TabStop = false;
             this.statisticsGroupBox.Text = "Statistics";
             // 
-            // varianceInterval
+            // tableLayoutPanel3
             // 
-            this.varianceInterval.AutoSize = true;
-            this.varianceInterval.Location = new System.Drawing.Point(271, 41);
-            this.varianceInterval.Name = "varianceInterval";
-            this.varianceInterval.Size = new System.Drawing.Size(43, 13);
-            this.varianceInterval.TabIndex = 11;
-            this.varianceInterval.Text = "100000";
+            this.tableLayoutPanel3.AutoSize = true;
+            this.tableLayoutPanel3.ColumnCount = 6;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.Controls.Add(this.label4, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.maxInterval, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.avgInterval, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label11, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label12, 2, 1);
+            this.tableLayoutPanel3.Controls.Add(this.rangeInterval, 5, 0);
+            this.tableLayoutPanel3.Controls.Add(this.varianceInterval, 5, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label14, 4, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label13, 4, 0);
+            this.tableLayoutPanel3.Controls.Add(this.minInterval, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.stdevInterval, 3, 1);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(9, 18);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(229, 41);
+            this.tableLayoutPanel3.TabIndex = 1;
             // 
-            // rangeInterval
+            // label4
             // 
-            this.rangeInterval.AutoSize = true;
-            this.rangeInterval.Location = new System.Drawing.Point(261, 18);
-            this.rangeInterval.Name = "rangeInterval";
-            this.rangeInterval.Size = new System.Drawing.Size(43, 13);
-            this.rangeInterval.TabIndex = 9;
-            this.rangeInterval.Text = "100000";
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(0, 25);
+            this.label4.Margin = new System.Windows.Forms.Padding(0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(50, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Average:";
             // 
-            // label6
+            // label2
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(227, 18);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(42, 13);
-            this.label6.TabIndex = 8;
-            this.label6.Text = "Range:";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(227, 41);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(52, 13);
-            this.label8.TabIndex = 10;
-            this.label8.Text = "Variance:";
-            // 
-            // stdevInterval
-            // 
-            this.stdevInterval.AutoSize = true;
-            this.stdevInterval.Location = new System.Drawing.Point(153, 41);
-            this.stdevInterval.Name = "stdevInterval";
-            this.stdevInterval.Size = new System.Drawing.Size(43, 13);
-            this.stdevInterval.TabIndex = 7;
-            this.stdevInterval.Text = "100000";
-            // 
-            // minInterval
-            // 
-            this.minInterval.AutoSize = true;
-            this.minInterval.Location = new System.Drawing.Point(134, 18);
-            this.minInterval.Name = "minInterval";
-            this.minInterval.Size = new System.Drawing.Size(43, 13);
-            this.minInterval.TabIndex = 5;
-            this.minInterval.Text = "100000";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(112, 18);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(27, 13);
-            this.label7.TabIndex = 4;
-            this.label7.Text = "Min:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(112, 41);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(46, 13);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "STDEV:";
-            // 
-            // avgInterval
-            // 
-            this.avgInterval.AutoSize = true;
-            this.avgInterval.Location = new System.Drawing.Point(33, 41);
-            this.avgInterval.Name = "avgInterval";
-            this.avgInterval.Size = new System.Drawing.Size(43, 13);
-            this.avgInterval.TabIndex = 3;
-            this.avgInterval.Text = "100000";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 41);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Avg:";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(0, 2);
+            this.label2.Margin = new System.Windows.Forms.Padding(0, 0, 0, 10);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(54, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Maximum:";
             // 
             // maxInterval
             // 
             this.maxInterval.AutoSize = true;
-            this.maxInterval.Location = new System.Drawing.Point(33, 18);
+            this.maxInterval.Location = new System.Drawing.Point(54, 2);
+            this.maxInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
             this.maxInterval.Name = "maxInterval";
-            this.maxInterval.Size = new System.Drawing.Size(43, 13);
-            this.maxInterval.TabIndex = 1;
-            this.maxInterval.Text = "100000";
+            this.maxInterval.Size = new System.Drawing.Size(13, 13);
+            this.maxInterval.TabIndex = 4;
+            this.maxInterval.Text = "0";
             // 
-            // label1
+            // avgInterval
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 18);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Max:";
+            this.avgInterval.AutoSize = true;
+            this.avgInterval.Location = new System.Drawing.Point(54, 25);
+            this.avgInterval.Margin = new System.Windows.Forms.Padding(0);
+            this.avgInterval.Name = "avgInterval";
+            this.avgInterval.Size = new System.Drawing.Size(13, 13);
+            this.avgInterval.TabIndex = 5;
+            this.avgInterval.Text = "0";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(70, 2);
+            this.label11.Margin = new System.Windows.Forms.Padding(0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(51, 13);
+            this.label11.TabIndex = 6;
+            this.label11.Text = "Minimum:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(70, 25);
+            this.label12.Margin = new System.Windows.Forms.Padding(0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(46, 13);
+            this.label12.TabIndex = 7;
+            this.label12.Text = "STDEV:";
+            // 
+            // rangeInterval
+            // 
+            this.rangeInterval.AutoSize = true;
+            this.rangeInterval.Location = new System.Drawing.Point(189, 2);
+            this.rangeInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.rangeInterval.Name = "rangeInterval";
+            this.rangeInterval.Size = new System.Drawing.Size(13, 13);
+            this.rangeInterval.TabIndex = 12;
+            this.rangeInterval.Text = "0";
+            // 
+            // varianceInterval
+            // 
+            this.varianceInterval.AutoSize = true;
+            this.varianceInterval.Location = new System.Drawing.Point(189, 25);
+            this.varianceInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.varianceInterval.Name = "varianceInterval";
+            this.varianceInterval.Size = new System.Drawing.Size(13, 13);
+            this.varianceInterval.TabIndex = 13;
+            this.varianceInterval.Text = "0";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(137, 25);
+            this.label14.Margin = new System.Windows.Forms.Padding(0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(52, 13);
+            this.label14.TabIndex = 11;
+            this.label14.Text = "Variance:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(137, 2);
+            this.label13.Margin = new System.Windows.Forms.Padding(0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(42, 13);
+            this.label13.TabIndex = 9;
+            this.label13.Text = "Range:";
+            // 
+            // minInterval
+            // 
+            this.minInterval.AutoSize = true;
+            this.minInterval.Location = new System.Drawing.Point(121, 2);
+            this.minInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.minInterval.Name = "minInterval";
+            this.minInterval.Size = new System.Drawing.Size(13, 13);
+            this.minInterval.TabIndex = 14;
+            this.minInterval.Text = "0";
+            // 
+            // stdevInterval
+            // 
+            this.stdevInterval.AutoSize = true;
+            this.stdevInterval.Location = new System.Drawing.Point(121, 25);
+            this.stdevInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.stdevInterval.Name = "stdevInterval";
+            this.stdevInterval.Size = new System.Drawing.Size(13, 13);
+            this.stdevInterval.TabIndex = 15;
+            this.stdevInterval.Text = "0";
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.comboBoxPlotType);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(210, 63);
+            this.groupBox1.Size = new System.Drawing.Size(210, 75);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Plot Type";
@@ -280,7 +316,7 @@
             "yVelocity vs. Time",
             "xyVelocity vs. Time",
             "X vs. Y"});
-            this.comboBoxPlotType.Location = new System.Drawing.Point(6, 26);
+            this.comboBoxPlotType.Location = new System.Drawing.Point(6, 30);
             this.comboBoxPlotType.Name = "comboBoxPlotType";
             this.comboBoxPlotType.Size = new System.Drawing.Size(200, 21);
             this.comboBoxPlotType.TabIndex = 1;
@@ -290,14 +326,14 @@
             this.groupBox2.Controls.Add(this.numericUpDownStart);
             this.groupBox2.Location = new System.Drawing.Point(219, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(135, 63);
+            this.groupBox2.Size = new System.Drawing.Size(135, 75);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Point Start";
             // 
             // numericUpDownStart
             // 
-            this.numericUpDownStart.Location = new System.Drawing.Point(6, 26);
+            this.numericUpDownStart.Location = new System.Drawing.Point(6, 30);
             this.numericUpDownStart.Name = "numericUpDownStart";
             this.numericUpDownStart.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownStart.TabIndex = 3;
@@ -307,14 +343,14 @@
             this.groupBox3.Controls.Add(this.numericUpDownEnd);
             this.groupBox3.Location = new System.Drawing.Point(360, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(135, 63);
+            this.groupBox3.Size = new System.Drawing.Size(135, 75);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Data Point End";
             // 
             // numericUpDownEnd
             // 
-            this.numericUpDownEnd.Location = new System.Drawing.Point(6, 26);
+            this.numericUpDownEnd.Location = new System.Drawing.Point(6, 30);
             this.numericUpDownEnd.Name = "numericUpDownEnd";
             this.numericUpDownEnd.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownEnd.TabIndex = 2;
@@ -325,7 +361,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.Controls.Add(this.checkBoxLines, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxStem, 0, 1);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(855, 3);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(748, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -357,7 +393,7 @@
             // buttonSavePNG
             // 
             this.buttonSavePNG.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.buttonSavePNG.Location = new System.Drawing.Point(994, 24);
+            this.buttonSavePNG.Location = new System.Drawing.Point(1558, 31);
             this.buttonSavePNG.Margin = new System.Windows.Forms.Padding(3, 3, 9, 3);
             this.buttonSavePNG.Name = "buttonSavePNG";
             this.buttonSavePNG.Size = new System.Drawing.Size(75, 23);
@@ -370,7 +406,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1084, 791);
+            this.ClientSize = new System.Drawing.Size(1366, 826);
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(1100, 830);
             this.Name = "MousePlot";
@@ -380,8 +416,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.statisticsGroupBox.ResumeLayout(false);
             this.statisticsGroupBox.PerformLayout();
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStart)).EndInit();
@@ -407,19 +446,20 @@
         private System.Windows.Forms.CheckBox checkBoxStem;
         private System.Windows.Forms.CheckBox checkBoxLines;
         private System.Windows.Forms.GroupBox statisticsGroupBox;
-        private System.Windows.Forms.Label stdevInterval;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label minInterval;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label avgInterval;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label maxInterval;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Label varianceInterval;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label maxInterval;
+        private System.Windows.Forms.Label avgInterval;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label rangeInterval;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label varianceInterval;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label minInterval;
+        private System.Windows.Forms.Label stdevInterval;
     }
 }
