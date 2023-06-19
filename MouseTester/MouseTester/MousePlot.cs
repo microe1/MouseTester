@@ -28,6 +28,8 @@ namespace MouseTester
         double y_max;
         private string xlabel = "";
         private string ylabel = "";
+        private double firstPercentileMetric = 99;
+        private double secondPercentileMetric = 99.9;
 
         public MousePlot(MouseLog Mlog)
         {
@@ -432,6 +434,8 @@ namespace MouseTester
             stdevInterval.Text = $"{Math.Sqrt(squared_deviations / (count - 1)):0.0000####}";
             rangeInterval.Text = $"{intervals[count - 1] - intervals[0]:0.0000####}";
             medianInterval.Text = $"{(count % 2 == 1 ? intervals[middle_index] : (intervals[middle_index - 1] + intervals[middle_index]) / 2):0.0000####}";
+            firstPercentileInterval.Text = $"{intervals[(int) Math.Ceiling(firstPercentileMetric / 100 * count) - 1]:0.0000####}";
+            secondPercentileInterval.Text = $"{intervals[(int)Math.Ceiling(secondPercentileMetric / 100 * count) - 1]:0.0000####}";
         }
 
         private void plot_xvelocity_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
@@ -684,6 +688,32 @@ namespace MouseTester
                     bm.Save(fileName, ImageFormat.Png);
                 }
             }
+        }
+
+        private void firstPercentileMetricLabel_Click(object sender, EventArgs e)
+        {
+            NumericInputDialog dialog = new NumericInputDialog();
+            dialog.SetNumericValueText((decimal)firstPercentileMetric);
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                this.firstPercentileMetric = (double)dialog.value;
+            }
+            refresh_plot();
+            firstPercentileMetricLabel.Text = $"{firstPercentileMetric:0.###} Percentile";
+        }
+
+        private void secondPercentileMetricLabel_Click(object sender, EventArgs e)
+        {
+            NumericInputDialog dialog = new NumericInputDialog();
+            dialog.SetNumericValueText((decimal)secondPercentileMetric);
+            dialog.Text = secondPercentileMetricLabel.Text;
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                this.secondPercentileMetric = (double)dialog.value;
+            }
+            refresh_plot();
+            secondPercentileMetricLabel.Text = $"{secondPercentileMetric:0.###} Percentile";
         }
     }
 }

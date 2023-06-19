@@ -45,6 +45,10 @@
             this.label13 = new System.Windows.Forms.Label();
             this.minInterval = new System.Windows.Forms.Label();
             this.stdevInterval = new System.Windows.Forms.Label();
+            this.firstPercentileMetricLabel = new System.Windows.Forms.Label();
+            this.secondPercentileMetricLabel = new System.Windows.Forms.Label();
+            this.firstPercentileInterval = new System.Windows.Forms.Label();
+            this.secondPercentileInterval = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.comboBoxPlotType = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -84,7 +88,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(1366, 791);
+            this.splitContainer1.Size = new System.Drawing.Size(1178, 791);
             this.splitContainer1.SplitterDistance = 699;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -97,7 +101,7 @@
             this.plot1.Location = new System.Drawing.Point(0, 0);
             this.plot1.Name = "plot1";
             this.plot1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plot1.Size = new System.Drawing.Size(1366, 699);
+            this.plot1.Size = new System.Drawing.Size(1178, 699);
             this.plot1.TabIndex = 0;
             this.plot1.Text = "plot1";
             this.plot1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
@@ -127,7 +131,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1360, 73);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1172, 73);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // statisticsGroupBox
@@ -137,7 +141,7 @@
             this.statisticsGroupBox.Location = new System.Drawing.Point(501, 3);
             this.statisticsGroupBox.Name = "statisticsGroupBox";
             this.statisticsGroupBox.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this.statisticsGroupBox.Size = new System.Drawing.Size(230, 71);
+            this.statisticsGroupBox.Size = new System.Drawing.Size(337, 71);
             this.statisticsGroupBox.TabIndex = 6;
             this.statisticsGroupBox.TabStop = false;
             this.statisticsGroupBox.Text = "Statistics";
@@ -145,7 +149,9 @@
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.AutoSize = true;
-            this.tableLayoutPanel3.ColumnCount = 6;
+            this.tableLayoutPanel3.ColumnCount = 8;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -164,6 +170,10 @@
             this.tableLayoutPanel3.Controls.Add(this.label13, 4, 0);
             this.tableLayoutPanel3.Controls.Add(this.minInterval, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.stdevInterval, 3, 1);
+            this.tableLayoutPanel3.Controls.Add(this.firstPercentileMetricLabel, 6, 0);
+            this.tableLayoutPanel3.Controls.Add(this.secondPercentileMetricLabel, 6, 1);
+            this.tableLayoutPanel3.Controls.Add(this.firstPercentileInterval, 7, 0);
+            this.tableLayoutPanel3.Controls.Add(this.secondPercentileInterval, 7, 1);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(6, 17);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -171,7 +181,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(219, 41);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(326, 41);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // label4
@@ -294,6 +304,48 @@
             this.stdevInterval.TabIndex = 15;
             this.stdevInterval.Text = "0";
             // 
+            // firstPercentileMetricLabel
+            // 
+            this.firstPercentileMetricLabel.AutoSize = true;
+            this.firstPercentileMetricLabel.Location = new System.Drawing.Point(219, 2);
+            this.firstPercentileMetricLabel.Margin = new System.Windows.Forms.Padding(0);
+            this.firstPercentileMetricLabel.Name = "firstPercentileMetricLabel";
+            this.firstPercentileMetricLabel.Size = new System.Drawing.Size(72, 13);
+            this.firstPercentileMetricLabel.TabIndex = 16;
+            this.firstPercentileMetricLabel.Text = "99 Percentile:";
+            this.firstPercentileMetricLabel.Click += new System.EventHandler(this.firstPercentileMetricLabel_Click);
+            // 
+            // secondPercentileMetricLabel
+            // 
+            this.secondPercentileMetricLabel.AutoSize = true;
+            this.secondPercentileMetricLabel.Location = new System.Drawing.Point(219, 25);
+            this.secondPercentileMetricLabel.Margin = new System.Windows.Forms.Padding(0);
+            this.secondPercentileMetricLabel.Name = "secondPercentileMetricLabel";
+            this.secondPercentileMetricLabel.Size = new System.Drawing.Size(81, 13);
+            this.secondPercentileMetricLabel.TabIndex = 17;
+            this.secondPercentileMetricLabel.Text = "99.9 Percentile:";
+            this.secondPercentileMetricLabel.Click += new System.EventHandler(this.secondPercentileMetricLabel_Click);
+            // 
+            // firstPercentileInterval
+            // 
+            this.firstPercentileInterval.AutoSize = true;
+            this.firstPercentileInterval.Location = new System.Drawing.Point(300, 2);
+            this.firstPercentileInterval.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this.firstPercentileInterval.Name = "firstPercentileInterval";
+            this.firstPercentileInterval.Size = new System.Drawing.Size(13, 13);
+            this.firstPercentileInterval.TabIndex = 18;
+            this.firstPercentileInterval.Text = "0";
+            // 
+            // secondPercentileInterval
+            // 
+            this.secondPercentileInterval.AutoSize = true;
+            this.secondPercentileInterval.Location = new System.Drawing.Point(300, 25);
+            this.secondPercentileInterval.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this.secondPercentileInterval.Name = "secondPercentileInterval";
+            this.secondPercentileInterval.Size = new System.Drawing.Size(13, 13);
+            this.secondPercentileInterval.TabIndex = 19;
+            this.secondPercentileInterval.Text = "0";
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.comboBoxPlotType);
@@ -362,7 +414,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.Controls.Add(this.checkBoxLines, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxStem, 0, 1);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(737, 3);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(844, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -394,7 +446,7 @@
             // buttonSavePNG
             // 
             this.buttonSavePNG.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.buttonSavePNG.Location = new System.Drawing.Point(1276, 27);
+            this.buttonSavePNG.Location = new System.Drawing.Point(1088, 27);
             this.buttonSavePNG.Margin = new System.Windows.Forms.Padding(3, 3, 9, 3);
             this.buttonSavePNG.Name = "buttonSavePNG";
             this.buttonSavePNG.Size = new System.Drawing.Size(75, 23);
@@ -407,9 +459,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1366, 791);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(1178, 791);
             this.Controls.Add(this.splitContainer1);
-            this.MinimumSize = new System.Drawing.Size(1100, 830);
+            this.MinimumSize = new System.Drawing.Size(1194, 830);
             this.Name = "MousePlot";
             this.Text = "MousePlot";
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -462,5 +515,9 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label minInterval;
         private System.Windows.Forms.Label stdevInterval;
+        private System.Windows.Forms.Label firstPercentileMetricLabel;
+        private System.Windows.Forms.Label secondPercentileMetricLabel;
+        private System.Windows.Forms.Label firstPercentileInterval;
+        private System.Windows.Forms.Label secondPercentileInterval;
     }
 }
