@@ -419,18 +419,19 @@ namespace MouseTester
             int count = intervals.Count();
             double average = sum / count;
             double squared_deviations = 0.0;
+            int middle_index = count / 2;
 
             foreach (double interval in intervals)
             {
                 squared_deviations += Math.Pow(interval - average, 2);
             }
 
-            maxInterval.Text = $"{intervals[count - 1]:0.00}ms";
-            minInterval.Text = $"{intervals[0]:0.00}ms";
-            avgInterval.Text = $"{average:0.00}ms";
-            stdevInterval.Text = $"{Math.Sqrt(squared_deviations / count):0.00}";
-            rangeInterval.Text = $"{intervals[count - 1] - intervals[0]:0.00}";
-            varianceInterval.Text = $"{squared_deviations / count:0.00}";
+            maxInterval.Text = $"{intervals[count - 1]:0.0000####}";
+            minInterval.Text = $"{intervals[0]:0.0000####}";
+            avgInterval.Text = $"{average:0.0000####}";
+            stdevInterval.Text = $"{Math.Sqrt(squared_deviations / (count - 1)):0.0000####}";
+            rangeInterval.Text = $"{intervals[count - 1] - intervals[0]:0.0000####}";
+            medianInterval.Text = $"{(count % 2 == 1 ? intervals[middle_index] : (intervals[middle_index - 1] + intervals[middle_index]) / 2):0.0000####}";
         }
 
         private void plot_xvelocity_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)

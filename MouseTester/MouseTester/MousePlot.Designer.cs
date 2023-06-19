@@ -40,7 +40,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.rangeInterval = new System.Windows.Forms.Label();
-            this.varianceInterval = new System.Windows.Forms.Label();
+            this.medianInterval = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.minInterval = new System.Windows.Forms.Label();
@@ -84,8 +84,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(1366, 826);
-            this.splitContainer1.SplitterDistance = 730;
+            this.splitContainer1.Size = new System.Drawing.Size(1366, 791);
+            this.splitContainer1.SplitterDistance = 699;
             this.splitContainer1.TabIndex = 0;
             // 
             // plot1
@@ -97,7 +97,7 @@
             this.plot1.Location = new System.Drawing.Point(0, 0);
             this.plot1.Name = "plot1";
             this.plot1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plot1.Size = new System.Drawing.Size(1366, 730);
+            this.plot1.Size = new System.Drawing.Size(1366, 699);
             this.plot1.TabIndex = 0;
             this.plot1.Text = "plot1";
             this.plot1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
@@ -127,7 +127,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1642, 85);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1360, 73);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // statisticsGroupBox
@@ -136,7 +136,8 @@
             this.statisticsGroupBox.Controls.Add(this.tableLayoutPanel3);
             this.statisticsGroupBox.Location = new System.Drawing.Point(501, 3);
             this.statisticsGroupBox.Name = "statisticsGroupBox";
-            this.statisticsGroupBox.Size = new System.Drawing.Size(241, 75);
+            this.statisticsGroupBox.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this.statisticsGroupBox.Size = new System.Drawing.Size(230, 71);
             this.statisticsGroupBox.TabIndex = 6;
             this.statisticsGroupBox.TabStop = false;
             this.statisticsGroupBox.Text = "Statistics";
@@ -158,19 +159,19 @@
             this.tableLayoutPanel3.Controls.Add(this.label11, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.label12, 2, 1);
             this.tableLayoutPanel3.Controls.Add(this.rangeInterval, 5, 0);
-            this.tableLayoutPanel3.Controls.Add(this.varianceInterval, 5, 1);
+            this.tableLayoutPanel3.Controls.Add(this.medianInterval, 5, 1);
             this.tableLayoutPanel3.Controls.Add(this.label14, 4, 1);
             this.tableLayoutPanel3.Controls.Add(this.label13, 4, 0);
             this.tableLayoutPanel3.Controls.Add(this.minInterval, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.stdevInterval, 3, 1);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(9, 18);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(6, 17);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(229, 41);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(219, 41);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // label4
@@ -197,7 +198,7 @@
             // 
             this.maxInterval.AutoSize = true;
             this.maxInterval.Location = new System.Drawing.Point(54, 2);
-            this.maxInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.maxInterval.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.maxInterval.Name = "maxInterval";
             this.maxInterval.Size = new System.Drawing.Size(13, 13);
             this.maxInterval.TabIndex = 4;
@@ -207,7 +208,7 @@
             // 
             this.avgInterval.AutoSize = true;
             this.avgInterval.Location = new System.Drawing.Point(54, 25);
-            this.avgInterval.Margin = new System.Windows.Forms.Padding(0);
+            this.avgInterval.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.avgInterval.Name = "avgInterval";
             this.avgInterval.Size = new System.Drawing.Size(13, 13);
             this.avgInterval.TabIndex = 5;
@@ -216,7 +217,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(70, 2);
+            this.label11.Location = new System.Drawing.Point(77, 2);
             this.label11.Margin = new System.Windows.Forms.Padding(0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(51, 13);
@@ -226,7 +227,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(70, 25);
+            this.label12.Location = new System.Drawing.Point(77, 25);
             this.label12.Margin = new System.Windows.Forms.Padding(0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(46, 13);
@@ -236,37 +237,37 @@
             // rangeInterval
             // 
             this.rangeInterval.AutoSize = true;
-            this.rangeInterval.Location = new System.Drawing.Point(189, 2);
-            this.rangeInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.rangeInterval.Location = new System.Drawing.Point(196, 2);
+            this.rangeInterval.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.rangeInterval.Name = "rangeInterval";
             this.rangeInterval.Size = new System.Drawing.Size(13, 13);
             this.rangeInterval.TabIndex = 12;
             this.rangeInterval.Text = "0";
             // 
-            // varianceInterval
+            // medianInterval
             // 
-            this.varianceInterval.AutoSize = true;
-            this.varianceInterval.Location = new System.Drawing.Point(189, 25);
-            this.varianceInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.varianceInterval.Name = "varianceInterval";
-            this.varianceInterval.Size = new System.Drawing.Size(13, 13);
-            this.varianceInterval.TabIndex = 13;
-            this.varianceInterval.Text = "0";
+            this.medianInterval.AutoSize = true;
+            this.medianInterval.Location = new System.Drawing.Point(196, 25);
+            this.medianInterval.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this.medianInterval.Name = "medianInterval";
+            this.medianInterval.Size = new System.Drawing.Size(13, 13);
+            this.medianInterval.TabIndex = 13;
+            this.medianInterval.Text = "0";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(137, 25);
+            this.label14.Location = new System.Drawing.Point(151, 25);
             this.label14.Margin = new System.Windows.Forms.Padding(0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(52, 13);
+            this.label14.Size = new System.Drawing.Size(45, 13);
             this.label14.TabIndex = 11;
-            this.label14.Text = "Variance:";
+            this.label14.Text = "Median:";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(137, 2);
+            this.label13.Location = new System.Drawing.Point(151, 2);
             this.label13.Margin = new System.Windows.Forms.Padding(0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(42, 13);
@@ -276,8 +277,8 @@
             // minInterval
             // 
             this.minInterval.AutoSize = true;
-            this.minInterval.Location = new System.Drawing.Point(121, 2);
-            this.minInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.minInterval.Location = new System.Drawing.Point(128, 2);
+            this.minInterval.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.minInterval.Name = "minInterval";
             this.minInterval.Size = new System.Drawing.Size(13, 13);
             this.minInterval.TabIndex = 14;
@@ -286,8 +287,8 @@
             // stdevInterval
             // 
             this.stdevInterval.AutoSize = true;
-            this.stdevInterval.Location = new System.Drawing.Point(121, 25);
-            this.stdevInterval.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.stdevInterval.Location = new System.Drawing.Point(128, 25);
+            this.stdevInterval.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.stdevInterval.Name = "stdevInterval";
             this.stdevInterval.Size = new System.Drawing.Size(13, 13);
             this.stdevInterval.TabIndex = 15;
@@ -298,7 +299,7 @@
             this.groupBox1.Controls.Add(this.comboBoxPlotType);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(210, 75);
+            this.groupBox1.Size = new System.Drawing.Size(210, 71);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Plot Type";
@@ -326,7 +327,7 @@
             this.groupBox2.Controls.Add(this.numericUpDownStart);
             this.groupBox2.Location = new System.Drawing.Point(219, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(135, 75);
+            this.groupBox2.Size = new System.Drawing.Size(135, 71);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Point Start";
@@ -343,7 +344,7 @@
             this.groupBox3.Controls.Add(this.numericUpDownEnd);
             this.groupBox3.Location = new System.Drawing.Point(360, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(135, 75);
+            this.groupBox3.Size = new System.Drawing.Size(135, 71);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Data Point End";
@@ -361,7 +362,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.Controls.Add(this.checkBoxLines, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxStem, 0, 1);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(748, 3);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(737, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -393,7 +394,7 @@
             // buttonSavePNG
             // 
             this.buttonSavePNG.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.buttonSavePNG.Location = new System.Drawing.Point(1558, 31);
+            this.buttonSavePNG.Location = new System.Drawing.Point(1276, 27);
             this.buttonSavePNG.Margin = new System.Windows.Forms.Padding(3, 3, 9, 3);
             this.buttonSavePNG.Name = "buttonSavePNG";
             this.buttonSavePNG.Size = new System.Drawing.Size(75, 23);
@@ -406,7 +407,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1366, 826);
+            this.ClientSize = new System.Drawing.Size(1366, 791);
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(1100, 830);
             this.Name = "MousePlot";
@@ -456,7 +457,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label rangeInterval;
-        private System.Windows.Forms.Label varianceInterval;
+        private System.Windows.Forms.Label medianInterval;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label minInterval;
