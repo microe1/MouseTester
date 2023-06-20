@@ -88,7 +88,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(1178, 791);
+            this.splitContainer1.Size = new System.Drawing.Size(1299, 791);
             this.splitContainer1.SplitterDistance = 699;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -101,7 +101,7 @@
             this.plot1.Location = new System.Drawing.Point(0, 0);
             this.plot1.Name = "plot1";
             this.plot1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plot1.Size = new System.Drawing.Size(1178, 699);
+            this.plot1.Size = new System.Drawing.Size(1299, 699);
             this.plot1.TabIndex = 0;
             this.plot1.Text = "plot1";
             this.plot1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
@@ -131,7 +131,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1172, 73);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1293, 73);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // statisticsGroupBox
@@ -365,6 +365,7 @@
             "yCount vs. Time",
             "xyCount vs. Time",
             "Interval vs. Time",
+            "Frequency vs. Time",
             "xVelocity vs. Time",
             "yVelocity vs. Time",
             "xyVelocity vs. Time",
@@ -446,7 +447,7 @@
             // buttonSavePNG
             // 
             this.buttonSavePNG.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.buttonSavePNG.Location = new System.Drawing.Point(1088, 27);
+            this.buttonSavePNG.Location = new System.Drawing.Point(1209, 27);
             this.buttonSavePNG.Margin = new System.Windows.Forms.Padding(3, 3, 9, 3);
             this.buttonSavePNG.Name = "buttonSavePNG";
             this.buttonSavePNG.Size = new System.Drawing.Size(75, 23);
@@ -460,9 +461,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1178, 791);
+            this.ClientSize = new System.Drawing.Size(1299, 791);
             this.Controls.Add(this.splitContainer1);
-            this.MinimumSize = new System.Drawing.Size(1194, 830);
+            this.MinimumSize = new System.Drawing.Size(1315, 830);
             this.Name = "MousePlot";
             this.Text = "MousePlot";
             this.splitContainer1.Panel1.ResumeLayout(false);
