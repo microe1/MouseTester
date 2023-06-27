@@ -313,7 +313,6 @@
             this.firstPercentileMetricLabel.Size = new System.Drawing.Size(72, 13);
             this.firstPercentileMetricLabel.TabIndex = 16;
             this.firstPercentileMetricLabel.Text = "99 Percentile:";
-            this.firstPercentileMetricLabel.Click += new System.EventHandler(this.firstPercentileMetricLabel_Click);
             // 
             // secondPercentileMetricLabel
             // 
@@ -324,7 +323,6 @@
             this.secondPercentileMetricLabel.Size = new System.Drawing.Size(81, 13);
             this.secondPercentileMetricLabel.TabIndex = 17;
             this.secondPercentileMetricLabel.Text = "99.9 Percentile:";
-            this.secondPercentileMetricLabel.Click += new System.EventHandler(this.secondPercentileMetricLabel_Click);
             // 
             // firstPercentileInterval
             // 
