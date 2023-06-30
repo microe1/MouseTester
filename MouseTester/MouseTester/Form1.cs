@@ -26,6 +26,9 @@ namespace MouseTester
         public Form1()
         {
             InitializeComponent();
+
+            this.Text = $"MouseTester v{Program.version}";
+
             try {
                 // Process.GetCurrentProcess().ProcessorAffinity = new IntPtr(2); // Use only the second core 
                 // Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime; // Set highest process priority

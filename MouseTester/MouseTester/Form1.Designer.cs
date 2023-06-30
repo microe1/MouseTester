@@ -224,7 +224,6 @@
             this.MinimumSize = new System.Drawing.Size(300, 400);
             this.Name = "Form1";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Text = "MouseTester v1.4.1";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

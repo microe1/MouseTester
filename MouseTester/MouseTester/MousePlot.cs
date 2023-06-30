@@ -31,6 +31,7 @@ namespace MouseTester
 
         public MousePlot(MouseLog Mlog)
         {
+            this.Text = $"MousePlot v{Program.version}";
             InitializeComponent();
             this.mlog = new MouseLog();
             this.mlog.Desc = Mlog.Desc;
