@@ -52,7 +52,7 @@ namespace MouseTester
             }
             this.mlog.Add(new MouseEvent(buttonflags, x, y, ts));
 
-            this.last_start = 0;
+            this.last_start = 100;
             this.last_end = this.mlog.Events.Count - 1;
             initialize_plot();
 
