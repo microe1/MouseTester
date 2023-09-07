@@ -401,15 +401,15 @@ namespace MouseTester
             if (isInterval) {
                 ylabel = "Update Time (ms)";
                 firstPercentileMetric = 99;
-                firstPercentileMetricLabel.Text = "99 Percentile";
+                firstPercentileMetricLabel.Text = "99 Percentile:";
                 secondPercentileMetric = 99.9;
-                secondPercentileMetricLabel.Text = "99.9 Percentile";
+                secondPercentileMetricLabel.Text = "99.9 Percentile:";
             } else {
                 ylabel = "Frequency (Hz)";
                 firstPercentileMetric = 1;
-                firstPercentileMetricLabel.Text = "1 Percentile";
+                firstPercentileMetricLabel.Text = "1 Percentile:";
                 secondPercentileMetric = 0.1;
-                secondPercentileMetricLabel.Text = "0.1 Percentile";
+                secondPercentileMetricLabel.Text = "0.1 Percentile:";
             }
 
             List<double> intervals = new List<double>();
