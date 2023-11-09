@@ -450,12 +450,14 @@ namespace MouseTester
             {
                 squared_deviations += Math.Pow(transformFunction(interval) - average, 2);
             }
+            double maximumValue = transformFunction(isInterval ? intervals_descending[0] : intervals_descending[last_index]);
+            double minimumValue = transformFunction(isInterval ? intervals_descending[last_index] : intervals_descending[0]);
 
-            maxInterval.Text = $"{transformFunction(isInterval ? intervals_descending[0] : intervals_descending[last_index]):0.0000####}";
-            minInterval.Text = $"{transformFunction(isInterval ? intervals_descending[last_index]: intervals_descending[0]):0.0000####}";
+            maxInterval.Text = $"{maximumValue:0.0000####}";
+            minInterval.Text = $"{minimumValue:0.0000####}";
             avgInterval.Text = $"{average:0.0000####}";
             stdevInterval.Text = $"{Math.Sqrt(squared_deviations / (last_index)):0.0000####}";
-            rangeInterval.Text = $"{(isInterval ? range : 1000 * range):0.0000####}";
+            rangeInterval.Text = $"{maximumValue - minimumValue:0.0000####}";
             medianInterval.Text = $"{(transformFunction(count % 2 == 1 ? intervals_descending[middle_index] : (intervals_descending[middle_index - 1] + intervals_descending[middle_index]) / 2)):0.0000####}";
 
             List<double> percentiles_list = isInterval ? intervals_ascending : intervals_descending;
