@@ -694,28 +694,14 @@ namespace MouseTester
             saveFileDialog1.FilterIndex = 1;
             if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                MousePlot.Export(this.plot1.Model, saveFileDialog1.FileName, 800, 600);
-            }         
-        }
+                Bitmap bitmap = new Bitmap(splitContainer1.Width, splitContainer1.Height);
 
-        public static void Export(PlotModel model, string fileName, int width, int height, Brush background = null)
-        {
-            using (var bm = new Bitmap(width, height))
-            {
-                using (Graphics g = Graphics.FromImage(bm))
-                {
-                    if (background != null)
-                    {
-                        g.FillRectangle(background, 0, 0, width, height);
-                    }
-
-                    var rc = new GraphicsRenderContext { RendersToScreen = false };
-                    rc.SetGraphicsTarget(g);
-                    model.Update();
-                    model.Render(rc, width, height);
-                    bm.Save(fileName, ImageFormat.Png);
+                using (Graphics graphics = Graphics.FromImage(bitmap)) {
+                    splitContainer1.DrawToBitmap(bitmap, new Rectangle(0, 0, splitContainer1.Width, splitContainer1.Height));
                 }
-            }
+
+                bitmap.Save(saveFileDialog1.FileName, ImageFormat.Png);
+            }         
         }
     }
 }
