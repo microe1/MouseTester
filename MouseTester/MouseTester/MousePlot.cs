@@ -697,6 +697,7 @@ namespace MouseTester
                 Bitmap bitmap = new Bitmap(splitContainer1.Width, splitContainer1.Height);
 
                 using (Graphics graphics = Graphics.FromImage(bitmap)) {
+                    graphics.Clear(Color.White);
                     splitContainer1.DrawToBitmap(bitmap, new Rectangle(0, 0, splitContainer1.Width, splitContainer1.Height));
                 }
 
