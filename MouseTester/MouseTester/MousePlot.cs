@@ -31,6 +31,7 @@ namespace MouseTester
 
         public MousePlot(MouseLog Mlog)
         {
+            this.Text = $"MousePlot v{Program.version}";
             InitializeComponent();
             this.mlog = new MouseLog();
             this.mlog.Desc = Mlog.Desc;
@@ -51,7 +52,7 @@ namespace MouseTester
             }
             this.mlog.Add(new MouseEvent(buttonflags, x, y, ts));
 
-            this.last_start = 0;
+            this.last_start = 100;
             this.last_end = this.mlog.Events.Count - 1;
             initialize_plot();
 
@@ -73,6 +74,9 @@ namespace MouseTester
 
             this.checkBoxLines.Checked = false;
             this.checkBoxLines.CheckedChanged += new System.EventHandler(this.checkBoxLines_CheckedChanged);
+
+            // open MousePlot to "Interval vs. Time" selection
+            comboBoxPlotType.SelectedItem = "Interval vs. Time";
 
             refresh_plot();
         }
@@ -149,6 +153,9 @@ namespace MouseTester
                 StrokeThickness = 1.0
             };
 
+            // Only display statistics when "Interval" or "Frequency" is selected
+            statisticsGroupBox.Visible = comboBoxPlotType.Text.Contains("Interval") || comboBoxPlotType.Text.Contains("Frequency");
+
             if (comboBoxPlotType.Text.Contains("xyCount"))
             {
                 plot_xycounts_vs_time(scatterSeries1, scatterSeries2, stemSeries1, stemSeries2, lineSeries1, lineSeries2);
@@ -198,9 +205,9 @@ namespace MouseTester
                 }
 
             }
-            else if (comboBoxPlotType.Text.Contains("Interval"))
+            else if (comboBoxPlotType.Text.Contains("Interval") || comboBoxPlotType.Text.Contains("Frequency"))
             {
-                plot_interval_vs_time(scatterSeries1, stemSeries1, lineSeries1);
+                plot_interval_vs_time(scatterSeries1, stemSeries1, lineSeries1, comboBoxPlotType.Text.Contains("Interval"), (value) => comboBoxPlotType.Text.Contains("Interval") ? value : 1000 / value);
                 pm.Series.Add(scatterSeries1);
                 if (!checkBoxLines.Checked)
                 {
@@ -384,10 +391,28 @@ namespace MouseTester
             }
         }
 
-        private void plot_interval_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
+        private void plot_interval_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1, bool isInterval, Func<double, double> transformFunction)
         {
             xlabel = "Time (ms)";
-            ylabel = "Update Time (ms)";
+
+            double firstPercentileMetric;
+            double secondPercentileMetric;
+
+            if (isInterval) {
+                ylabel = "Update Time (ms)";
+                firstPercentileMetric = 99;
+                firstPercentileMetricLabel.Text = "99 Percentile:";
+                secondPercentileMetric = 99.9;
+                secondPercentileMetricLabel.Text = "99.9 Percentile:";
+            } else {
+                ylabel = "Frequency (Hz)";
+                firstPercentileMetric = 1;
+                firstPercentileMetricLabel.Text = "1 Percentile:";
+                secondPercentileMetric = 0.1;
+                secondPercentileMetricLabel.Text = "0.1 Percentile:";
+            }
+
+            List<double> intervals = new List<double>();
             reset_minmax();
             for (int i = last_start; i <= last_end; i++)
             {
@@ -401,11 +426,44 @@ namespace MouseTester
                 {
                     y = this.mlog.Events[i].ts - this.mlog.Events[i - 1].ts;
                 }
-                update_minmax(x, y);
-                scatterSeries1.Points.Add(new ScatterPoint(x, y));
-                lineSeries1.Points.Add(new DataPoint(x, y));
-                stemSeries1.Points.Add(new DataPoint(x, y));
+                intervals.Add(y);
+                update_minmax(x, transformFunction(y));
+                scatterSeries1.Points.Add(new ScatterPoint(x, transformFunction(y)));
+                lineSeries1.Points.Add(new DataPoint(x, transformFunction(y)));
+                stemSeries1.Points.Add(new DataPoint(x, transformFunction(y)));
             }
+
+            // Calculate statistics
+
+            List<double> intervals_descending = intervals.OrderByDescending(x => x).ToList();
+            List<double> intervals_ascending = intervals.OrderBy(x => x).ToList();
+
+            double sum = intervals_descending.Sum();
+            int count = intervals_descending.Count();
+            double average = transformFunction(sum / count);
+            double squared_deviations = 0.0;
+            int middle_index = count / 2;
+            int last_index = count - 1;
+            double range = intervals_descending[0] - intervals_descending[last_index];
+
+            foreach (double interval in intervals)
+            {
+                squared_deviations += Math.Pow(transformFunction(interval) - average, 2);
+            }
+            double maximumValue = transformFunction(isInterval ? intervals_descending[0] : intervals_descending[last_index]);
+            double minimumValue = transformFunction(isInterval ? intervals_descending[last_index] : intervals_descending[0]);
+
+            maxInterval.Text = $"{maximumValue:0.0000####}";
+            minInterval.Text = $"{minimumValue:0.0000####}";
+            avgInterval.Text = $"{average:0.0000####}";
+            stdevInterval.Text = $"{Math.Sqrt(squared_deviations / (last_index)):0.0000####}";
+            rangeInterval.Text = $"{maximumValue - minimumValue:0.0000####}";
+            medianInterval.Text = $"{(transformFunction(count % 2 == 1 ? intervals_descending[middle_index] : (intervals_descending[middle_index - 1] + intervals_descending[middle_index]) / 2)):0.0000####}";
+
+            List<double> percentiles_list = isInterval ? intervals_ascending : intervals_descending;
+
+            firstPercentileInterval.Text = $"{transformFunction(percentiles_list[(int) Math.Ceiling(firstPercentileMetric / 100 * count) - 1]):0.0000####}";
+            secondPercentileInterval.Text = $"{transformFunction(percentiles_list[(int)Math.Ceiling(secondPercentileMetric / 100 * count) - 1]):0.0000####}";
         }
 
         private void plot_xvelocity_vs_time(ScatterSeries scatterSeries1, StemSeries stemSeries1, LineSeries lineSeries1)
@@ -636,28 +694,15 @@ namespace MouseTester
             saveFileDialog1.FilterIndex = 1;
             if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                MousePlot.Export(this.plot1.Model, saveFileDialog1.FileName, 800, 600);
-            }         
-        }
+                Bitmap bitmap = new Bitmap(splitContainer1.Width, splitContainer1.Height);
 
-        public static void Export(PlotModel model, string fileName, int width, int height, Brush background = null)
-        {
-            using (var bm = new Bitmap(width, height))
-            {
-                using (Graphics g = Graphics.FromImage(bm))
-                {
-                    if (background != null)
-                    {
-                        g.FillRectangle(background, 0, 0, width, height);
-                    }
-
-                    var rc = new GraphicsRenderContext { RendersToScreen = false };
-                    rc.SetGraphicsTarget(g);
-                    model.Update();
-                    model.Render(rc, width, height);
-                    bm.Save(fileName, ImageFormat.Png);
+                using (Graphics graphics = Graphics.FromImage(bitmap)) {
+                    graphics.Clear(Color.White);
+                    splitContainer1.DrawToBitmap(bitmap, new Rectangle(0, 0, splitContainer1.Width, splitContainer1.Height));
                 }
-            }
+
+                bitmap.Save(saveFileDialog1.FileName, ImageFormat.Png);
+            }         
         }
     }
 }
