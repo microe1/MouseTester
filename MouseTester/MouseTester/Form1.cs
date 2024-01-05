@@ -79,7 +79,6 @@ namespace MouseTester
         {
             if (m.Msg == WM_INPUT)
             {
-#if true
                 RAWINPUT raw = new RAWINPUT();
                 uint size = (uint)Marshal.SizeOf(typeof(RAWINPUT));
                 int outsize = GetRawInputData(m.LParam, RID_INPUT, out raw, ref size, (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER)));
@@ -91,30 +90,6 @@ namespace MouseTester
                         logMouseEvent(new MouseEvent(raw.data.mouse.buttonsStr.usButtonFlags, raw.data.mouse.lLastX, -(raw.data.mouse.lLastY), pCounter));
                     }
                 }
-#else
-                uint dwSize = 0;
-
-                GetRawInputData(m.LParam, RID_INPUT, IntPtr.Zero, ref dwSize, (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER)));
-
-                IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
-                try
-                {
-                    if ((buffer != IntPtr.Zero) &&
-                        (GetRawInputData(m.LParam, RID_INPUT, buffer, ref dwSize, (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER))) == dwSize))
-                    {
-                        RAWINPUT raw = (RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RAWINPUT));
-
-                        if (raw.header.dwType == RIM_TYPEMOUSE)
-                        {
-                            logMouseEvent(new MouseEvent(raw.data.mouse.buttonsStr.usButtonFlags, raw.data.mouse.lLastX, -(raw.data.mouse.lLastY), pCounter));
-                        }
-                    }
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(buffer);
-                }
-#endif
             }
             base.WndProc(ref m);
         }
