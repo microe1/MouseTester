@@ -77,6 +77,7 @@ namespace MouseTester
 
         protected override void WndProc(ref Message m)
         {
+            QueryPerformanceCounter(out long pCounter);
             if (m.Msg == WM_INPUT)
             {
                 RAWINPUT raw = new RAWINPUT();
@@ -86,7 +87,6 @@ namespace MouseTester
                 {
                     if (raw.header.dwType == RIM_TYPEMOUSE)
                     {
-                        QueryPerformanceCounter(out long pCounter);
                         logMouseEvent(new MouseEvent(raw.data.mouse.buttonsStr.usButtonFlags, raw.data.mouse.lLastX, -(raw.data.mouse.lLastY), pCounter));
                     }
                 }
